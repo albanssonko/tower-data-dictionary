@@ -13,6 +13,7 @@ Fleetio is Tower's fleet-management system — the vehicle-centric counterpart t
 - **`std.service_tasks`** — Fleetio's service/work-order task catalog (VMRS classification codes for repair categorization) — the task *types*, not individual work orders (those live in `rpt.fleet_work_orders`, not documented here since `rpt` is the BI layer).
 - **`std.vehicle_inspections`** — Tower's own driver vehicle-inspection submissions (not a Fleetio table despite living alongside them) — pre-trip checklist results: cleanliness ratings, car-seat/safety-equipment presence, mechanical checks (`service_brakes`, `horn`, `head_lamps_brake_lights_blinkers`, `windshield`, `wipers_washers`, `tire_pressure`), photo/signature capture metadata. Only 6 rows currently — either a very new feature or narrowly piloted; don't assume this table is comprehensively populated.
 
+<!-- AUTO:BEGIN tables (regenerated daily by scripts/regenerate.py — do not hand-edit below this line) -->
 ### `std.fleetio_all_vehicles`  (rows: 851 | cols: 79)
 
 | Column | Type | Null? |
@@ -50,7 +51,7 @@ Fleetio is Tower's fleet-management system — the vehicle-centric counterpart t
 
 _+ 49 more columns (truncated for brevity):_ model, estimated_replacement_mileage, service_entries_count, inserted_at, out_of_service_meter_value, estimated_service_months, cf_fastrak_code, secondary_meter_unit, vin, registration_expiration_month, images_count, specs, group_ancestry, vehicle_type_id, work_orders_count, issues_count, fuel_type_name, in_service_meter_value, group_name, cf_remote, assetable_type, ai_enabled, archived_at, vehicle_status_name, axle_config_id, license_plate, cf_out_of_service_location, is_sample, cf_purchase_entity, vehicle_type_name, secondary_meter_value, cf_oos_description, current_location_entry_id, account_id, out_of_service_date, group_id, service_reminders_count, primary_meter_value, primary_meter_unit, driver, trim, cf_location_of_original_title, cf_gas_card, cf_af_accident_, cf_car_seat, cf_carseat, cf_uuid, cf_panic_button, cf_decommission_
 
-### `std.fleetio_contacts`  (rows: 11,761 | cols: 46)
+### `std.fleetio_contacts`  (rows: 11,762 | cols: 46)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -124,11 +125,11 @@ _+ 16 more columns (truncated for brevity):_ street_address, street_address_line
 
 _+ 16 more columns (truncated for brevity):_ part_manufacturer_part_number, part_measurement_unit_id, part_number, part_part_category_id, part_part_manufacturer_id, part_upc, part_unit_cost_cents, part_created_at, part_updated_at, part_location_name, part_location_description, part_location_account_id, part_location_created_at, part_location_updated_at, part_location_metadata_has_work_orders, part_location_metadata_has_active_work_orders
 
-### `std.fleetio_shift_type_backfill`  (rows: 617,759 | cols: 2)
+### `std.fleetio_shift_type_backfill`  (rows: 617,759 | cols: 2 | PK: inspection_id)
 
 | Column | Type | Null? |
 |---|---|---|
-| inspection_id | bigint | N |
+| **inspection_id** | bigint | N |
 | shift_type | nvarchar(50) | Y |
 
 ### `std.fleetio_vehicle_renewals`  (rows: 1,245 | cols: 22)
@@ -219,11 +220,11 @@ _+ 16 more columns (truncated for brevity):_ part_manufacturer_part_number, part
 | service_task_name | nvarchar(max) | Y |
 | default_reason_for_repair_code | nvarchar(max) | Y |
 
-### `std.vehicle_inspections`  (rows: 6 | cols: 53)
+### `std.vehicle_inspections`  (rows: 0 | cols: 53 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | varchar(50) | N |
+| **id** | varchar(50) | N |
 | inspection_number | varchar(50) | N |
 | template_version | smallint | N |
 | shift | varchar(50) | N |
@@ -256,3 +257,4 @@ _+ 16 more columns (truncated for brevity):_ part_manufacturer_part_number, part
 
 _+ 23 more columns (truncated for brevity):_ wipers_washers, rearview_mirrors, safety_equipment, uber_sticker, tire_pressure, vehicle_condition, personal_belongings, outcome, failed_item_keys, critical_item_keys, photo_count, signature_pathname, blob_pathnames, status, purge_after, started_at, submitted_at, client_ip, user_agent, created_at, updated_at, schema_version, comments
 
+<!-- AUTO:END tables -->

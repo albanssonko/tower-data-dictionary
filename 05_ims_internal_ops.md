@@ -16,11 +16,12 @@
 
 Full column lists below are the raw schema — no per-column business notes are given here since this domain wasn't directly used this session; treat column names as a starting hypothesis and verify against a live sample before building anything on top of them.
 
-### `std.ims_announcements`  (rows: 6 | cols: 15)
+<!-- AUTO:BEGIN tables (regenerated daily by scripts/regenerate.py — do not hand-edit below this line) -->
+### `std.ims_announcements`  (rows: 6 | cols: 15 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | title | nvarchar(500) | Y |
 | message | nvarchar(max) | Y |
@@ -36,11 +37,11 @@ Full column lists below are the raw schema — no per-column business notes are 
 | updated_at | datetime2 | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_drivers`  (rows: 10,952 | cols: 19)
+### `std.ims_drivers`  (rows: 10,952 | cols: 19 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(50) | Y |
 | first_name | nvarchar(255) | Y |
 | last_name | nvarchar(255) | Y |
@@ -60,11 +61,11 @@ Full column lists below are the raw schema — no per-column business notes are 
 | updated_at | datetime2 | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_employee_requests`  (rows: 35 | cols: 33)
+### `std.ims_employee_requests`  (rows: 35 | cols: 33 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | requisition_number | nvarchar(255) | Y |
 | position_needed | nvarchar(500) | Y |
@@ -97,11 +98,11 @@ Full column lists below are the raw schema — no per-column business notes are 
 
 _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_synced_at
 
-### `std.ims_employees`  (rows: 752 | cols: 18)
+### `std.ims_employees`  (rows: 752 | cols: 18 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(50) | Y |
 | user_id | nvarchar(255) | Y |
 | employee_name | nvarchar(500) | Y |
@@ -120,11 +121,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | updated_at | datetime2 | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_facilities_request_comments`  (rows: 15 | cols: 11)
+### `std.ims_facilities_request_comments`  (rows: 15 | cols: 11 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | facilities_request_id | nvarchar(255) | Y |
 | comment | nvarchar(max) | Y |
@@ -136,11 +137,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | attachments_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_facilities_requests`  (rows: 26 | cols: 26)
+### `std.ims_facilities_requests`  (rows: 26 | cols: 26 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | request_number | nvarchar(255) | Y |
 | title | nvarchar(500) | Y |
@@ -167,11 +168,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | tags_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_group_meetings`  (rows: 6 | cols: 29)
+### `std.ims_group_meetings`  (rows: 6 | cols: 29 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | title | nvarchar(500) | Y |
 | meeting_type | nvarchar(255) | Y |
@@ -201,11 +202,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | notes_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_hr_clerk_mails`  (rows: 1,818 | cols: 26)
+### `std.ims_hr_clerk_mails`  (rows: 1,818 | cols: 26 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | direction | nvarchar(255) | Y |
 | category | nvarchar(255) | Y |
@@ -232,11 +233,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | attachments_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_lost_found_items`  (rows: 95 | cols: 23)
+### `std.ims_lost_found_items`  (rows: 95 | cols: 23 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | item_number | nvarchar(255) | Y |
 | description | nvarchar(max) | Y |
@@ -260,11 +261,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | photos_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_marketing_request_comments`  (rows: 173 | cols: 11)
+### `std.ims_marketing_request_comments`  (rows: 173 | cols: 11 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | marketing_request_id | nvarchar(255) | Y |
 | comment | nvarchar(max) | Y |
@@ -276,11 +277,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | attachments_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_marketing_requests`  (rows: 39 | cols: 28)
+### `std.ims_marketing_requests`  (rows: 39 | cols: 28 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | request_number | nvarchar(255) | Y |
 | title | nvarchar(500) | Y |
@@ -309,11 +310,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | tags_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_network_devices`  (rows: 50 | cols: 22)
+### `std.ims_network_devices`  (rows: 50 | cols: 22 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | name | nvarchar(500) | Y |
 | type | nvarchar(255) | Y |
@@ -336,11 +337,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | unifiData_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_off_cycles`  (rows: 140 | cols: 14)
+### `std.ims_off_cycles`  (rows: 140 | cols: 14 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | created_at | datetime2 | Y |
 | updated_at | datetime2 | Y |
@@ -355,11 +356,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | department_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_one_on_ones`  (rows: 109 | cols: 29)
+### `std.ims_one_on_ones`  (rows: 109 | cols: 29 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | manager_id | nvarchar(255) | Y |
 | manager_name | nvarchar(500) | Y |
@@ -389,11 +390,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | wellBeing_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_qr_codes`  (rows: 6 | cols: 18)
+### `std.ims_qr_codes`  (rows: 6 | cols: 18 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | name | nvarchar(500) | Y |
 | description | nvarchar(max) | Y |
@@ -412,11 +413,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | scans_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_security_alerts`  (rows: 445 | cols: 21)
+### `std.ims_security_alerts`  (rows: 445 | cols: 21 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | alert_type | nvarchar(255) | Y |
 | severity | nvarchar(255) | Y |
@@ -438,11 +439,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | details_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_sms_channels`  (rows: 10 | cols: 13)
+### `std.ims_sms_channels`  (rows: 10 | cols: 13 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | name | nvarchar(255) | Y |
 | description | nvarchar(max) | Y |
@@ -456,11 +457,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | settings_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_sms_conversations`  (rows: 128 | cols: 16)
+### `std.ims_sms_conversations`  (rows: 128 | cols: 16 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | channel_id | nvarchar(255) | Y |
 | external_number | nvarchar(255) | Y |
@@ -477,11 +478,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | tags_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_sms_messages`  (rows: 569 | cols: 24)
+### `std.ims_sms_messages`  (rows: 569 | cols: 24 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | message_id | nvarchar(255) | Y |
 | conversation_id | nvarchar(255) | Y |
@@ -506,11 +507,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | updated_at | datetime2 | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_tesla_vehicles`  (rows: 430 | cols: 20)
+### `std.ims_tesla_vehicles`  (rows: 430 | cols: 20 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | vehicle_name | nvarchar(500) | Y |
 | vin | nvarchar(255) | Y |
@@ -531,11 +532,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | cachedState_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_wifi_passwords`  (rows: 18 | cols: 16)
+### `std.ims_wifi_passwords`  (rows: 18 | cols: 16 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | network_name | nvarchar(255) | Y |
 | security_type | nvarchar(255) | Y |
@@ -552,11 +553,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | updated_at | datetime2 | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_work_request_comments`  (rows: 0 | cols: 11)
+### `std.ims_work_request_comments`  (rows: 0 | cols: 11 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | work_request_id | nvarchar(255) | Y |
 | comment | nvarchar(max) | Y |
@@ -568,11 +569,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | attachments_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_work_requests`  (rows: 7 | cols: 30)
+### `std.ims_work_requests`  (rows: 7 | cols: 30 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | ticket_number | nvarchar(255) | Y |
 | project_title | nvarchar(500) | Y |
@@ -603,11 +604,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | attachments_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `ref.ims_admin_settings`  (rows: 2 | cols: 6)
+### `ref.ims_admin_settings`  (rows: 2 | cols: 6 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | setting_key | nvarchar(255) | Y |
 | updated_at | datetime2 | Y |
@@ -664,11 +665,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | permissions_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `ref.ims_system_constants`  (rows: 0 | cols: 8)
+### `ref.ims_system_constants`  (rows: 0 | cols: 8 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | created_at | datetime2 | Y |
 | updated_at | datetime2 | Y |
@@ -677,11 +678,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | category_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `ref.ims_system_options`  (rows: 264 | cols: 12)
+### `ref.ims_system_options`  (rows: 264 | cols: 12 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(255) | N |
 | option_key | nvarchar(255) | Y |
 | label | nvarchar(255) | Y |
@@ -694,11 +695,11 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | options_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `ref.ims_system_settings`  (rows: 1 | cols: 6)
+### `ref.ims_system_settings`  (rows: 1 | cols: 6 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
-| id | int | N |
+| **id** | int | N |
 | mongo_id | nvarchar(50) | Y |
 | created_at | datetime2 | Y |
 | updated_at | datetime2 | Y |
@@ -724,3 +725,4 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | metadata_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
+<!-- AUTO:END tables -->
