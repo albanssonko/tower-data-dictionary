@@ -77,7 +77,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | source_org_id | nvarchar(50) | Y |
 | is_teen_trip | nvarchar(10) | Y |
 
-### `std.uber_ev_driver_activity`  (rows: 506,526 | cols: 8 | PK: DriverUUID, StartTime)
+### `std.uber_ev_driver_activity`  (rows: 506,532 | cols: 8 | PK: DriverUUID, StartTime)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -184,7 +184,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | ReportId | nvarchar(100) | Y |
 | source_org_id | nvarchar(50) | Y |
 
-### `std.uber_ev_driver_locations`  (rows: 88 | cols: 11 | PK: DriverUuid, LocationEpochMs)
+### `std.uber_ev_driver_locations`  (rows: 95 | cols: 11 | PK: DriverUuid, LocationEpochMs)
 
 | Column | Type | Null? |
 |---|---|---|

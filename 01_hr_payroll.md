@@ -277,7 +277,7 @@ _+ 110 more columns (truncated for brevity):_ departmentPosition_isUnionDuesColl
 | assignedTo_companyId | varchar(max) | Y |
 | assignedTo_employeeId | varchar(max) | Y |
 
-### `std.paylocity_ev_punches`  (rows: 1,040,070 | cols: 42)
+### `std.paylocity_ev_punches`  (rows: 1,040,076 | cols: 42)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -502,6 +502,97 @@ _+ 3 more columns (truncated for brevity):_ w2Box, relatedDeductionCode, benefit
 | displayName | nvarchar(500) | Y |
 | receivedDate | nvarchar(100) | Y |
 | uploadedDate | nvarchar(100) | Y |
+
+### `ref.paylocity_av_employee_documents`  (rows: 0 | cols: 9)
+
+| Column | Type | Null? |
+|---|---|---|
+| employeeId | nvarchar(50) | Y |
+| category | nvarchar(50) | Y |
+| companyConfidential | nvarchar(50) | Y |
+| employeeConfidential | nvarchar(50) | Y |
+| documentId | nvarchar(100) | Y |
+| companyId | nvarchar(50) | Y |
+| displayName | nvarchar(500) | Y |
+| receivedDate | nvarchar(100) | Y |
+| uploadedDate | nvarchar(100) | Y |
+
+### `ref.paylocity_wav_employee_documents`  (rows: 26,956 | cols: 9)
+
+| Column | Type | Null? |
+|---|---|---|
+| employeeId | nvarchar(50) | Y |
+| category | nvarchar(50) | Y |
+| companyConfidential | nvarchar(50) | Y |
+| employeeConfidential | nvarchar(50) | Y |
+| documentId | nvarchar(100) | Y |
+| companyId | nvarchar(50) | Y |
+| displayName | nvarchar(500) | Y |
+| receivedDate | nvarchar(100) | Y |
+| uploadedDate | nvarchar(100) | Y |
+
+### `ref.paylocity_document_downloads_av`  (rows: 0 | cols: 6 | PK: downloadId)
+
+| Column | Type | Null? |
+|---|---|---|
+| **downloadId** | int | N |
+| documentId | nvarchar(64) | N |
+| downloadUrl | nvarchar(max) | N |
+| expiresIn | int | N |
+| generatedAt | datetime2 | N |
+| expiresAt | datetime2 | N |
+
+### `ref.paylocity_document_downloads_ev`  (rows: 760 | cols: 6 | PK: downloadId)
+
+| Column | Type | Null? |
+|---|---|---|
+| **downloadId** | int | N |
+| documentId | nvarchar(64) | N |
+| downloadUrl | nvarchar(max) | N |
+| expiresIn | int | N |
+| generatedAt | datetime2 | N |
+| expiresAt | datetime2 | N |
+
+### `ref.paylocity_document_downloads_wav`  (rows: 193 | cols: 6 | PK: downloadId)
+
+| Column | Type | Null? |
+|---|---|---|
+| **downloadId** | int | N |
+| documentId | nvarchar(64) | N |
+| downloadUrl | nvarchar(max) | N |
+| expiresIn | int | N |
+| generatedAt | datetime2 | N |
+| expiresAt | datetime2 | N |
+
+### `ref.paylocity_document_sharepoint_uploads_av`  (rows: 0 | cols: 5 | PK: uploadId)
+
+| Column | Type | Null? |
+|---|---|---|
+| **uploadId** | int | N |
+| documentId | nvarchar(64) | N |
+| sharePointFileName | nvarchar(500) | N |
+| sharePointItemId | nvarchar(255) | Y |
+| uploadedAt | datetime2 | N |
+
+### `ref.paylocity_document_sharepoint_uploads_ev`  (rows: 0 | cols: 5 | PK: uploadId)
+
+| Column | Type | Null? |
+|---|---|---|
+| **uploadId** | int | N |
+| documentId | nvarchar(64) | N |
+| sharePointFileName | nvarchar(500) | N |
+| sharePointItemId | nvarchar(255) | Y |
+| uploadedAt | datetime2 | N |
+
+### `ref.paylocity_document_sharepoint_uploads_wav`  (rows: 191 | cols: 5 | PK: uploadId)
+
+| Column | Type | Null? |
+|---|---|---|
+| **uploadId** | int | N |
+| documentId | nvarchar(64) | N |
+| sharePointFileName | nvarchar(500) | N |
+| sharePointItemId | nvarchar(255) | Y |
+| uploadedAt | datetime2 | N |
 
 ### `ref.adp_punches`  (rows: 607,273 | cols: 14)
 
