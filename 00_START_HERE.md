@@ -20,7 +20,7 @@ Add this whole `data_dictionary/` folder to a **Claude Desktop Project's** knowl
 | **raw** | 203 | Untransformed API/vendor dumps — the landing zone before cleanup into `std`. Messy types, inconsistent casing, duplicate/near-duplicate columns. | Avoid — use the `std` equivalent. |
 | **stg** | 29 | Transient staging tables used mid-pipeline. | Avoid. |
 | **dbo** | 118 tables + 42 views | **Mixed bag — contains real tables AND abandoned shadow copies of `std`/`ref` tables that silently stopped updating.** See warning below. | **Verify before trusting — see below.** |
-| **audit** | 20 | Change logs / audit trails. | Only if you're specifically auditing changes. |
+| **audit** | 20 | Change logs / audit trails — **but also hosts `audit.vw_driver_shifts`, a live, actively-queried view** (not just a log) that the Power BI model's shift/dispatch-type logic depends on directly (see `07_powerbi_glossary.md`). Don't assume everything in this schema is passive history. | Depends what you need — check the specific object. |
 
 ### ⚠️ The `dbo` trap (confirmed, not theoretical)
 
@@ -33,6 +33,9 @@ This database's default schema for most SQL logins is `dbo`. That means **any un
 | `Paylocity_ev_Punches` | stale since 2026-08-07 | current through today |
 | `samsara_ev_safety_events` | stale since 2026-08-07 (found while building this doc — `alert_operations.py`'s `initialize_queue()` still reads this bare reference, unfixed as of this writing) | `ref.samsara_ev_safety_events`, current through today |
 | `fleetio_all_vehicles` | 676 rows, both actively updated **today** — not dead like the others, just **incomplete** | 851 rows (confirmed 2026-08-26: `std` is correct, `dbo` should still be avoided) |
+| `vw_daily_driver_activity` | 291,591 rows | `ref.vw_daily_driver_activity`, 364,814 rows (found 2026-08-26 in the Power BI M query for the `return_table` table — bare `vw_daily_driver_activity` reference) |
+
+**⚠️ This bug isn't confined to Python scripts — it's in the live Power BI model too.** The M queries backing the Power BI tables `Samsara Vehicles`, `Vehicle Inventory Status`, and `Vehicle Status Change` all reference bare `fleetio_all_vehicles` (no schema prefix), so all three are silently reading the incomplete `dbo` copy (676 vehicles) instead of `std` (851). This directly understates fleet OOS/active-transition counts in any report built on those tables. See `07_powerbi_glossary.md` for details — this needs a fix in Power Query, not just documentation.
 
 **Rule of thumb: always schema-qualify. If a query (yours or an existing script) references a table without `std.`/`ref.` in front of it, verify which schema it actually hit before trusting the result — don't assume it's the live one.**
 

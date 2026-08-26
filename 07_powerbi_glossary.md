@@ -4,9 +4,48 @@ Companion to [`00_START_HERE.md`](00_START_HERE.md) through [`06_external_misc.m
 
 Source: `PowerBI_Model_Dictionary.md` (generated 2026-08-26 via Tabular Editor C# script, from `C:\Users\Alban Ssonko\Downloads\extract_model_dictionary (2).csx`), which pulls DAX/M directly from the live model — treat that file's formulas as authoritative when this glossary and the raw DAX ever disagree.
 
-**Status: first pass.** Covers the `_fleetio` and `_measuresTable` display folders (the bulk of the model — driver grading, turnover, gap time, attendance) plus `_safety_measures` in full. **Not yet reviewed**: `_scheduling_measures`, `_zeem_measures` (EV charging fleet health), the HR/hiring-funnel measures in `Date_table` (leads/hired/trained via Freshsales), the 79 Calculated Columns section, the 47 Power Query M table-load definitions, and the What-If/Target/Forecast measure groups. Flag if you want the next pass to prioritize a specific one of these.
+**Status: complete pass (2026-08-26).** All 324 measures, all 79 calculated columns, and all 47 Power Query M table-load definitions have been read. See the "Coverage note" near the end of this file for exactly what got deep-dived vs. lineage-only, and the small list of genuinely open items (an orphaned `Total Crashes` reference that needs Power BI Desktop to resolve, and a couple of lower-traffic queries not transcribed line-by-line). This pass also found and fixed a real gap from the first pass: `EPM`/`actual_trip_fare` don't exist as SQL columns anywhere (they're computed in Power Query), which caused a live query failure before this file explained why — see the warning section immediately below.
 
 ---
+
+## ⚠️ Power BI table/column names do not always map 1:1 to SQL — read this before querying via the MCP connector
+
+**Found 2026-08-26, after a real failure:** Claude tried to find a column called `EPM` and couldn't, because the glossary referenced `'Uber Trip Activity'[EPM]` from DAX without clarifying that neither the Power BI table name nor that column exist in SQL the way the name suggests. Two distinct traps, both apply here:
+
+**1. The Power BI table `'Uber Trip Activity'` does NOT source from `std.uber_ev_trip_activity`.** Its Power Query M (line ~6999 of the model dictionary export) actually queries **`rpt.DriverTripActivity`** — a different table entirely, richer than the raw trip table. Lineage, confirmed against the live DB and the `dbo.Update_DriverTripActivity` stored procedure that populates it:
+
+```
+std.uber_ev_trip_activity  ──┐
+                              ├─▶  rpt.DriverTripActivity  ──▶  Power BI 'Uber Trip Activity'
+std.uber_ev_driver_transactions ─┘   (via dbo.Update_DriverTripActivity,
+                                       incremental: 3-day lookback, full
+                                       3-day rebuild at midnight)
+```
+
+`rpt.DriverTripActivity` (6M+ rows, updates continuously — confirmed current to today) adds, beyond what's in `std.uber_ev_trip_activity`:
+- **`total_paid_to_you`, `total_your_earnings`, `total_tip`** — summed per trip from `std.uber_ev_driver_transactions` (a table not otherwise part of the trip-activity family)
+- **`shift_id`, `shift_start_time`, `shift_end_time`, `trip_start_flag`, `trip_end_flag`** — a shift is inferred, not stored anywhere upstream: a new shift starts whenever the gap since the driver's previous trip drop-off exceeds **4 hours**. This 4-hour-gap rule is the actual definition of "shift" used throughout the Power BI grading/attendance measures that reference trip-derived shift times — not the same thing as a Paylocity scheduled shift (`std.paylocity_ev_shift_unified`).
+- **`assigned_date`** — the trip's drop-off time (or request time if never completed) shifted back 4 hours before taking the date, so a trip just after midnight still counts toward the previous day's shift
+
+**2. `EPM` and `actual_trip_fare` are not stored anywhere in SQL — not in `std`, not in `rpt`.** They're computed fresh, in the `'Uber Trip Activity'` Power Query M step itself, every time the model refreshes:
+
+```sql
+-- EPM (earnings per mile)
+CASE
+    WHEN trip_distance = 0 OR trip_distance IS NULL THEN 0
+    ELSE (total_paid_to_you - total_tip) / trip_distance
+END AS EPM
+
+-- actual_trip_fare (normalizes a magnitude/scaling data-quality issue in total_paid_to_you —
+-- some values come through scaled up by a power of 10; this brings them back to a 2-digit integer part)
+CASE
+    WHEN LEN(CAST(FLOOR(ABS(total_paid_to_you)) AS varchar)) > 2
+    THEN total_paid_to_you / POWER(10.0, LEN(CAST(FLOOR(ABS(total_paid_to_you)) AS varchar)) - 2)
+    ELSE total_paid_to_you
+END AS actual_trip_fare
+```
+
+**So: to get EPM via the MCP connector, query `rpt.DriverTripActivity` and apply the `CASE` expression above — there is no `EPM` column to `SELECT` anywhere.** This is a real gap, not a one-off — assume any DAX-referenced `'TableName'[column]` might be M-query-computed (like this) or a DAX calculated column (the 79 Calculated Columns section is still unreviewed — see Open Items) rather than a literal SQL column, and verify before querying live.
 
 ## The driver grading system
 
@@ -102,13 +141,113 @@ Vehicle status values seen across measures (from `'fleetio-vehicle-export'[vehic
 - **`Avg_MTTR_work_orders`** — Mean Time To Repair, in days: total OOS hours on completed work orders ÷ completed work order count ÷ 24
 - **`Overall Car Score`** — average of `(exterior_score + interior_score) / 2` from `fleetio_inspections`
 
+**`Vehicle Status Change`'s `Active`/`OSS` vocabulary, resolved (2026-08-26, moderate confidence):** these come from a different source than `fleetio_all_vehicles.vehicle_status_name` — specifically `rpt.vehicle_status_shift`, a status-transition log with only `from_vehicle_status_id`/`to_vehicle_status_id` values `Active`/`OSS`. This looks like a simplified binary bucketing (OOS-type statuses collapsed into one `OSS` value) rather than the full `Road Ready`/`Out of Service`/`Biohazard`/etc. vocabulary on `fleetio_all_vehicles` — but what populates `rpt.vehicle_status_shift` and maps the richer statuses down to two buckets wasn't traced this pass. Treat `OSS` ≈ "any out-of-service-type status" until confirmed further.
+
 ---
 
-## Open items for the next pass
+## ⚠️ Confirmed: the `dbo` shadow-table bug also lives inside the Power BI model itself, not just Python scripts
 
-1. `_scheduling_measures`, `_zeem_measures` folders — not reviewed
-2. Hiring/recruiting funnel measures in `Date_table` (`hired_paylocity`, `leads_freshsales`, `scheduled_interview_freshsales`, `trained_freshsales`, etc.) — ties to the Freshsales recruiting-pipeline domain in `06_external_misc.md`, not cross-referenced yet
-3. Calculated Columns section (79 columns) — entirely unreviewed
-4. Power Query M table-load definitions (47 queries) — entirely unreviewed; this is where the actual `rpt`/`dbo`/`std` source-table lineage for each Power BI table lives, and is worth cross-checking against the `dbo`-shadow-table warning in `00_START_HERE.md`
-5. `Total Crashes` orphaned reference (see above) — needs checking directly in Power BI Desktop, not resolvable from the export alone
+Found 2026-08-26 by reading all 47 Power Query M table-load definitions. Three Power BI tables — **`Samsara Vehicles`**, **`Vehicle Inventory Status`**, **`Vehicle Status Change`** — all reference bare, unqualified `fleetio_all_vehicles` in their M-embedded SQL. Per `00_START_HERE.md`, that resolves to `dbo.fleetio_all_vehicles` (676 vehicles), not `std.fleetio_all_vehicles` (851) — meaning these three tables (and everything built on `Vehicle Inventory Status`/`Vehicle Status Change`, including the entire OOS-day-tracking `Report Rows` layer below) silently exclude ~175 vehicles' worth of status history. This is a live model bug, not just a documentation gap — fixing it means editing the M query in Power Query Editor (add `std.` in front of `fleetio_all_vehicles` in all three), not something fixable from this glossary alone.
+
+A fourth: **`return_table`** (backing the `Dead Distance_%` measure) references bare `vw_daily_driver_activity`, resolving to `dbo.vw_daily_driver_activity` (291,591 rows) instead of `ref.vw_daily_driver_activity` (364,814 rows) — same bug class, added to the table in `00_START_HERE.md`.
+
+Every other bare/unqualified reference found across the 47 M queries was checked individually and confirmed to have **no** `std`/`ref` counterpart at all — i.e. legitimately `dbo`-only, not a bug: `samsara_vehicle`, `vw_samsara_assets_location_unique`, `vw_all_drivers` (verified clean separately), `vw_ev_daily_dispatch`, `vw_fleetio_inspections_carwash`, `vw_vehicles_ancestry`, `vw_paylocity_ev_shift_unified_pacific`, `samsara_driver`, `uber_payment_orders_new`, `dbo.uber_all_drivers`, `dbo.vehicle_snapshot`, `dbo.fleetio_ev_work_orders`. `dbo.uber_ev_auto_pos` and `std.uber_ev_auto_pos` were checked and are in sync (identical row counts) — redundant but not wrong. `kpi_grading` exists in both `dbo` and `stg` with identical row counts (32 rows, a small config table) — also not a divergence issue.
+
+## `'All Drivers'` — full lineage (the single most heavily-referenced table in the model)
+
+Traced 2026-08-26 from its M query. Source: `vw_all_drivers` (bare — resolves to `dbo.vw_all_drivers`, already verified clean/current), enriched with three more joins:
+
+- **`dbo.test_punches`** (alarming name, but verified legitimate — see `_regenerate.md`-adjacent investigation notes below) → `[Last Punch Date]`, `[Last Hours Online Date]`
+- **`rpt.DriverTripActivity`** → `[Last Trip Date]` (max trip drop-off per driver)
+- **`std.paylocity_ev_shift_unified`** → current/upcoming scheduled shift, via a priority-ordered pick (this week > next week > most-recent-past for active drivers; most-recent-relative-to-termination for terminated ones)
+- **`raw.paylocity_car_seat_trained_drivers`** → `car_seat_active` Yes/No flag
+
+**`dbo.test_punches` lineage (verified, not actually test data):** despite the name, this is a legitimate, current, TRUNCATE-and-reload materialized cache — `dbo.usp_refresh_test_punches` runs `TRUNCATE TABLE dbo.test_punches; INSERT INTO dbo.test_punches SELECT * FROM dbo.vw_paylocity_ev_punches`, and that view correctly sources `std.Paylocity_ev_Punches`/`std.paylocity_ev_shift_unified` with a punch-interval-merging algorithm (adjacent punches with no gap get merged into one continuous work block) and computes `[Hours Variance]` (actual vs. scheduled hours). Confirmed current through today (338K+ rows). The name is just poorly chosen, not a sign of stale/fake data — but if a `std`-only equivalent ever gets built, prefer it and flag `dbo.test_punches` for cleanup.
+
+**⚠️ `'All Drivers'` silently excludes an entire location:** the query's final `WHERE` clause includes `AND d.[Location] <> '200SFO0101'` — San Francisco drivers are filtered out entirely. Since `'All Drivers'` backs essentially every grading/turnover/attendance measure in the model, **any measure built on it is implicitly EV/Mission/Douglas-only (and whatever else isn't SFO), not company-wide**, with no visual indicator of the exclusion anywhere in the measure names.
+
+**Exact formulas for columns referenced throughout the grading/turnover measures but not stored in any single SQL table:**
+```sql
+-- [Last Active Date]: most recent of trip/punch/online-hours activity, in priority order
+CASE
+    WHEN [Last Trip Date] IS NOT NULL
+     AND [Last Trip Date] >= ISNULL([Last Punch Date], '1900-01-01')
+     AND [Last Trip Date] >= ISNULL([Last Hours Online Date], '1900-01-01')
+    THEN [Last Trip Date]
+    WHEN [Last Punch Date] IS NOT NULL
+     AND [Last Punch Date] >= ISNULL([Last Hours Online Date], '1900-01-01')
+    THEN [Last Punch Date]
+    WHEN [Last Hours Online Date] IS NOT NULL THEN [Last Hours Online Date]
+    ELSE NULL
+END
+
+-- [Last Active Minus Terminated At]: the "ghosting" metric behind the whole turnover cluster
+CASE
+    WHEN [Last Active Date] IS NULL OR [Termination Date] IS NULL THEN 0
+    WHEN ([Termination Date] > latest_hire_date OR [Last Active Date] < CAST([Termination Date] AS date))
+    THEN DATEDIFF(DAY, [Last Active Date], [Termination Date])
+    ELSE 0
+END
+
+-- [Veteran Status]: tenure bucketing
+CASE
+    WHEN [Hire Date] IS NULL THEN NULL
+    WHEN DATEDIFF(DAY, [Hire Date], GETDATE()) < 14 THEN 'New Driver'
+    WHEN DATEDIFF(DAY, [Hire Date], GETDATE()) < 30 THEN 'Somewhat New'
+    ELSE 'Veteran'
+END
+
+-- [Hire Type]
+CASE WHEN [Rehire Date] > [Hire Date] THEN 'Re-hire' ELSE 'New Hire' END
+
+-- [Locations] (matches the Mission/Douglas cost-center mapping in 00_START_HERE.md, confirms it)
+CASE
+    WHEN [Location] = '200LAX0103' THEN 'Mission'
+    WHEN [Location] = '200LAX0104' THEN 'Douglas'
+    ELSE [Location Name]
+END
+```
+
+## Two different "shift" concepts — don't conflate them
+
+"Shift" means two genuinely different things depending which measure you're looking at:
+
+1. **Trip-gap shifts** (`rpt.DriverTripActivity`, feeds `Uber Trip Activity`): a new shift starts whenever the gap since the driver's last trip drop-off exceeds **4 hours**. Purely inferred from trip timestamps.
+2. **AM/PM cycle shifts** (`audit.vw_driver_shifts`, feeds `Uber Driver Activity`'s `dispatch_type`): a fixed daily cycle — login between 04:00–14:59 = `AM`, 15:00–03:59 = `PM` (a pre-4am login counts toward the *previous* day's PM shift). Used specifically to detect **`dispatch_type = 'Re-dispatched'`**: a driver assigned to a second (or later) vehicle within the same AM/PM cycle.
+
+These are not interchangeable, and neither matches Paylocity's own scheduled shifts (`std.paylocity_ev_shift_unified`) — three distinct "shift" definitions coexist in this system depending which table you're near.
+
+## `Uber Driver Payments` — a mid-year fare methodology change
+
+`[Actual Net Fare]` is not computed the same way across all dates:
+```sql
+CASE
+    WHEN TRY_CAST(StartTime AS date) < '2025-12-01' THEN ISNULL(NetFare, 0)
+    ELSE ISNULL(TotalEarnings, 0) - ISNULL(Tip, 0) + ISNULL(RefundsAndExpenses, 0)
+END
+```
+Anything before December 2025 uses the raw `NetFare` field; from Dec 1 2025 onward it's computed from `TotalEarnings`/`Tip`/`RefundsAndExpenses` instead. **Comparing net-fare figures across that boundary without accounting for the methodology change will produce a misleading trend.** Also: driver UUID `9b63e6e2-16f8-4224-9d77-fd731eb51fec` is explicitly excluded from this table (likely a shared/test/dummy Uber account — the same UUID appears as the supplier-portal org ID in `alert_operations.py`'s link-building code, worth reconciling if it matters). `[Pay Date]` = the Monday starting the `StartTime`'s week, plus 11 days (an ~11-day payment-lag convention).
+
+## `Report Rows` — three measures are unimplemented stubs
+
+`Funding ACH`, `Funding Credit Card`, and `Funding Needed` are all literally `BLANK() /* TODO: source not yet identified */` in the live model — they will always render blank/zero wherever used, not because of missing data but because they were never built. If a report appears to show $0 funding needed, this is why. Separately, `OOS Glass` filters `vendor_type = "Mobile Mechanic"` and `OOS Mechanical` filters `vendor_type = "Repair Shop"` — the measure names don't match their filter values, which could confuse whoever's maintaining this later.
+
+## `Summary` table — a second, less-verified turnover/attrition layer
+
+Distinct from the `terminated_paylocity*`/`turnover_recently_active_drivers` cluster documented above, the `Summary` measure group (`Active Drivers (Daily)`, `Average Daily Attrition`, `Net Attrition %`, `Cumulative Net Hire`, `Total Hired`/`Total Terminated`) works off a **calculated table** called `Summary`, pre-aggregated by Location + Date. Its `Hired` and `Terminated` calculated columns contain literal developer comments — `-- adjust column names if needed` / `-- adjust column names as needed` — suggesting this layer may not be fully verified. `Terminated` also joins against a `'Terminations - EV'` table (separate from `'All Drivers'`) on `[Termination Date] = Summary[Date]`, while `Terminated by Driver Activity` joins `'All Drivers'` on `[Last Active Date] = Summary[Date]` instead — two different date bases for what sound like similar "terminated" concepts. **If weekly attrition numbers from this layer disagree with the driver-level `real turnover rate`, trust the driver-level one** (it's been directly confirmed with the user; this one hasn't).
+
+## `zeem` — EV battery health tracking
+
+Sources from `vw_zeem_battery_degradation` (bare, `dbo`-only — no `std` equivalent checked). Tracks per-vehicle battery State of Health (`state_of_health_pct`), charge session efficiency (`kwh_per_mile`/`miles_per_kwh`), and a `health_status` field with at least `Dispose`/`Plan Replacement` values feeding the `Vehicles to dispose now`/`Vehicles to plan replacement`/`Vehicles under 75% SoH` fleet-lifecycle-planning measures. Distinct from `std.charging_sessions` (documented in `06_external_misc.md`) — that one is OCPP charging-session protocol data; `zeem` is battery-health/degradation tracking, apparently a different vendor integration ("Zeem" — see `zeem_charging.py` in the repo).
+
+---
+
+## Coverage note
+
+This pass reviewed: all measure display folders (`_fleetio`, `_measuresTable`, `_safety_measures`, `_scheduling_measures`, `_zeem_measures`), the Freshsales hiring-funnel measures in `Date_table`, the remaining ungrouped measure tables (`Summary`, `Report Rows`, `Vehicle Inventory Status`, `Vehicle Status Change`, `Targets`/What-If groups, etc.), the Calculated Columns section (found: 71 of 79 are unusable placeholders — "derived from calculated table" — the extraction tool didn't capture DAX-calculated-table expressions; the 8 that did have real formulas are folded into the sections above), and all 47 Power Query M table-load definitions (table/schema lineage extracted for every one; full formula-level detail captured for the highest-traffic tables — `All Drivers`, `Uber Trip Activity`, `Uber Driver Activity`, `Uber Driver Payments`, `Vehicle Inventory Status`, `Vehicle Status Change`, `fleetio_ev_work_orders`, `fleetio_inspections`).
+
+**Genuinely still open:**
+- `Total Crashes` orphaned reference (referenced by `Accidents per 30k miles` and `Driver Rank`, defined nowhere) — needs checking directly in Power BI Desktop/Tabular Editor, not resolvable from a static export
+- The exact mapping of `rpt.vehicle_status_shift`'s `Active`/`OSS` values back to Fleetio's full status vocabulary — what populates that table wasn't traced
+- Fully line-by-line formula detail for the lower-traffic M queries (`parking_tickets`, `Samsara Vehicles`, `samsara_trips`, `Uber Payment Orders`, `uber_teens`, `userm`, etc.) — schema/table lineage is captured for all of them, but not every WHERE-clause business rule was transcribed
 6. `Vehicle Status Change`'s `Active`/`OSS` vocabulary vs. Fleetio's `Road Ready`/`Out of service` — same states or different?
