@@ -8,6 +8,27 @@ Source: `PowerBI_Model_Dictionary.md` (generated 2026-08-26 via Tabular Editor C
 
 ---
 
+## ✅ SQL views now exist for the Power-Query-only logic below — query these directly, don't recompute
+
+**Created 2026-08-26**, so the formulas below are queryable from any device via the same read-only `mssql` connector, not dependent on this glossary being loaded as local context. All three are plain views (`SELECT` only needed, `db_datareader` already covers them) — additive, don't touch any table Power BI depends on, and are trivially reversible (`DROP VIEW`) if anything about them needs revisiting:
+
+| View | Wraps | Adds |
+|---|---|---|
+| **`rpt.vw_driver_trip_activity`** | `rpt.DriverTripActivity` | `EPM`, `actual_trip_fare` |
+| **`rpt.vw_all_drivers_enriched`** | `dbo.vw_all_drivers` + `dbo.test_punches` + `rpt.DriverTripActivity` + `raw.paylocity_car_seat_trained_drivers` | `[Locations]` (Mission/Douglas mapping), `[Last Active Date]`, `[Last Active Minus Terminated At]` (the ghosting formula), `[Veteran Status]`, `[Hire Type]`, `[Length of Service (Days)]`, `car_seat_active` |
+| **`rpt.vw_uber_ev_driver_activity_enriched`** | `std.uber_ev_driver_activity` + `audit.vw_driver_shifts` | `[Hours On Trip]`/`[Hours Online]` parsed to decimal (base table stores them as `'DD:HH:MM'` text), `dispatch_type` (`Re-dispatched`/`Regular`, via the AM/PM-cycle shift logic) |
+| **`rpt.vw_uber_ev_driver_payments_enriched`** | `std.uber_ev_driver_payments` | `[Actual Net Fare]` (the date-dependent methodology switch at 2025-12-01), `[Pay Date]`, excludes the dummy driver UUID `9b63e6e2-16f8-4224-9d77-fd731eb51fec` |
+
+**Deliberately NOT built as views** (scope decision, not an oversight):
+- The **`Summary`** weekly-attrition table's own DAX has literal `-- adjust column names if needed` developer comments — replicating unverified logic into a new "official" SQL view would enshrine something the model's own author didn't finish trusting. Use `rpt.vw_all_drivers_enriched` (backing the confirmed-accurate `real turnover rate` metric) for turnover analysis instead.
+- **`Vehicle Inventory Status`/`Vehicle Status Change`** (OOS day-tracking) — very complex recursive CTEs, and rebuilding them properly means fixing the `fleetio_all_vehicles` bare-reference bug (see `00_START_HERE.md`) at the same time, not bundling a bug-for-bug replica. Flagged as a larger follow-up, not done here.
+
+**⚠️ Performance note on `rpt.vw_uber_ev_driver_activity_enriched`:** unlike the Power BI M query it's based on (which always filters by a `RangeStart`/`RangeEnd` date parameter), this view has **no date bound** — the `dispatch_type` redispatch logic scans all of `audit.vw_driver_shifts` and groups by driver/date across full history before any filter you add gets applied. A `SELECT TOP 5` against it took a couple of minutes during testing (2026-08-26, 506K rows). **Always add a `WHERE [Date] >= ...` predicate when querying this one** — the other three views are fine unfiltered.
+
+**Note on `'All Drivers'`'s scope:** `rpt.vw_all_drivers_enriched` inherits the EV-only scope from `dbo.vw_all_drivers` (confirmed: EV fleet only, WAV/AV not yet included), but **deliberately does NOT apply Power BI's additional San Francisco exclusion** (`WHERE [Location] <> '200SFO0101'`) — the view shows all EV locations including SFO, which is *more* complete than the Power BI table it's based on. If you want the exact same population Power BI reports on, add that filter yourself; if you want the true full EV picture, this view already gives you that.
+
+---
+
 ## ⚠️ Power BI table/column names do not always map 1:1 to SQL — read this before querying via the MCP connector
 
 **Found 2026-08-26, after a real failure:** Claude tried to find a column called `EPM` and couldn't, because the glossary referenced `'Uber Trip Activity'[EPM]` from DAX without clarifying that neither the Power BI table name nor that column exist in SQL the way the name suggests. Two distinct traps, both apply here:

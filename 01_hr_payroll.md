@@ -4,6 +4,8 @@ Covers Paylocity data (Tower's HR/payroll system of record) for all three fleets
 
 See [`00_START_HERE.md`](00_START_HERE.md) for the AV/EV/WAV convention, universal join keys, and status/position code glossary — those apply throughout this file and aren't repeated per table.
 
+**For turnover/attrition/tenure questions (EV only)**, use **`rpt.vw_all_drivers_enriched`** instead of querying `*_employees_detail` directly — it adds the "ghosting"-aware `[Last Active Minus Terminated At]` formula that the confirmed-accurate `real turnover rate` metric is built on, plus `[Last Active Date]`, `[Veteran Status]`, `[Hire Type]`, and the Mission/Douglas `[Locations]` mapping. See `07_powerbi_glossary.md`'s "SQL views now exist" section and its Turnover cluster writeup for what these mean and why the ghosting distinction matters.
+
 ## Table families
 
 - **`*_employees_detail`** — one row per employee, the full Paylocity API "detail" record flattened (nested JSON like `departmentPosition.jobTitle` becomes `departmentPosition_jobTitle`). This is the record HR alert scripts iterate over. Key columns to reach for: `employeeId`, `firstName`/`lastName`, `status_employeeStatus`, `status_hireDate`/`status_terminationDate`/`status_reHireDate`, `departmentPosition_positionCode`/`costCenter2`/`jobTitle`, `workAddress_location`, `custom_Uber_ID`(`_guid`), `custom_Driver_License`. **AV's version is entirely untyped** (`nvarchar(max)` throughout) — the other two have mostly `varchar(50)`.

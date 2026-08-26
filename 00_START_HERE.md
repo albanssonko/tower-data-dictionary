@@ -16,7 +16,7 @@ Add this whole `data_dictionary/` folder to a **Claude Desktop Project's** knowl
 |---|---|---|---|
 | **std** | 68 | The cleaned, typed, actively-maintained layer. Source of truth for analysis. | **Yes — default here.** |
 | **ref** | 41 | Reference/lookup data and large event-log tables (Uber driver roster, Samsara telemetry, weather, CRM). Also actively maintained. | **Yes.** |
-| **rpt** | 24 tables + 13 views | Power BI-facing reporting views/rollups, pre-aggregated for dashboards. | Yes, if you specifically want a pre-built report shape. |
+| **rpt** | 24 tables + 17 views | Power BI-facing reporting views/rollups, pre-aggregated for dashboards. Also now hosts 4 views created 2026-08-26 specifically to expose Power-Query-only business logic (like `EPM`, the driver "ghosting" formula) as plain SQL — see `07_powerbi_glossary.md`'s "SQL views now exist" section. | Yes, if you specifically want a pre-built report shape, or one of the 4 enrichment views. |
 | **raw** | 203 | Untransformed API/vendor dumps — the landing zone before cleanup into `std`. Messy types, inconsistent casing, duplicate/near-duplicate columns. | Avoid — use the `std` equivalent. |
 | **stg** | 29 | Transient staging tables used mid-pipeline. | Avoid. |
 | **dbo** | 118 tables + 42 views | **Mixed bag — contains real tables AND abandoned shadow copies of `std`/`ref` tables that silently stopped updating.** See warning below. | **Verify before trusting — see below.** |
