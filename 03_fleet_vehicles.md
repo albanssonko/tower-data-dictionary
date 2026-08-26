@@ -2,6 +2,16 @@
 
 Fleetio is Tower's fleet-management system — the vehicle-centric counterpart to Paylocity (people) and Uber (trips). Covers the vehicle registry, vehicle-associated contacts, parts inventory, renewals, and inspections.
 
+### The `dbo` rule for Fleetio specifically (confirmed 2026-08-26)
+
+The general rule in `00_START_HERE.md` is "avoid `dbo`, use `std`" — for Fleetio, refine that to: **use `std.fleetio_*` when it exists; only fall back to `dbo.fleetio_*` when no `std` copy exists at all.** Not every Fleetio table has been migrated into `std` — many legitimately live in `dbo` only, and that's correct, not a bug:
+
+Confirmed `dbo`-only (no `std` equivalent — using `dbo` here is required, not a mistake): `fleetio_vendors`, `fleetio_all_service_reminders` (+ `_staging`), `fleetio_all_vehicles_staging`, `fleetio_inspection_records_copy`, `fleetio_service_tasks_staging`, `fleetio_vehicle_acquisitions_staging`, `fleetio_vehicle_purchase_details_staging`, and the work-order table `fleetio_ev_work_orders` (lives in `dbo`/`raw`, no `std` copy — `alert_fleet.py` correctly uses `dbo.fleetio_ev_work_orders`).
+
+Confirmed has a **better** `std` copy — use `std`, not `dbo`: `fleetio_all_vehicles` (`dbo` has 676 rows vs `std`'s 851 — see the `dbo`-trap table in `00_START_HERE.md`), `fleetio_contacts` (`std`-only, no `dbo` copy at all), `fleetio_vehicle_renewals`, `fleetio_shift_type_backfill`, `fleetio_vehicle_statuses`, `fleetio_part_location_details`.
+
+**Bug found and fixed 2026-08-26:** `alert_fleet.py` had `FLEET_VEHICLE_STATUS_TABLE = "fleetio_all_vehicles"` (line 44, unqualified — same bug class as the `alert_operations.py` fixes) used in an f-string query, silently resolving to the incomplete `dbo` copy. Fixed to `"std.fleetio_all_vehicles"`. That same file's `dbo.fleetio_vendors` and `dbo.fleetio_ev_work_orders` references are correct as-is (no `std` equivalent exists for either) — not touched.
+
 ## Tables
 
 - **`std.fleetio_all_vehicles`** — the vehicle registry, one row per vehicle, 79 columns. Key columns: `license_plate` (universal vehicle join key — see START_HERE), `vin`, `make`/`model`/`year`, **`vehicle_status_name`**/`vehicle_status_id`/`vehicle_status_color` (e.g. `Training Vehicle` is explicitly excluded from several alert checks — see `alert_operations.py`), `group_id`/`group_name`/`group_ancestry` (Fleetio's location/org hierarchy — `group_hierarchy` on `fleetio_contacts` uses a matching prefix convention like `Tower WAV%`), `out_of_service_date`/`cf_out_of_service_reason`/`cf_out_of_service_location` (custom fields tracking OOS vehicles), `cf_car_seat`/`cf_carseat` (note: **two separate, inconsistently-named columns** — check both if querying car-seat equipment), `cf_ramp_entry` (WAV wheelchair-ramp flag), `cf_uuid`, `driver` (currently assigned driver, freeform).

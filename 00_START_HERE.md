@@ -36,6 +36,8 @@ This database's default schema for most SQL logins is `dbo`. That means **any un
 
 **Rule of thumb: always schema-qualify. If a query (yours or an existing script) references a table without `std.`/`ref.` in front of it, verify which schema it actually hit before trusting the result — don't assume it's the live one.**
 
+**Exception for Fleetio:** not every Fleetio table has a `std` copy — several (`fleetio_vendors`, `fleetio_ev_work_orders`, various `*_staging` tables) legitimately live in `dbo` only, and using `dbo` there is correct, not a bug. The rule is "prefer `std`, fall back to `dbo` only if `std` doesn't exist" — see `03_fleet_vehicles.md` for the confirmed list of which Fleetio tables fall into which bucket.
+
 ---
 
 ## Naming convention: AV / EV / WAV = three fleets
