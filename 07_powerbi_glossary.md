@@ -25,7 +25,7 @@ The model's central pattern: four raw KPIs, each turned into a per-driver A/B/C/
 - **`<KPI> Grade`** — the per-driver letter itself (used for row-level grade lookup/coloring)
 - **`Count of A/B/C/D Grades`** and **`% (Grade A/B/C/D) Drivers`** — same pattern applied to **`Overall Grade`** (a composite across all four KPIs — not yet reviewed in detail this pass)
 
-`EPH (No tips)` and `EPH (Uber)` are two distinct, intentionally-both-kept definitions (confirmed 2026-08-26) — `(No tips)` feeds `EPH Grade`; `(Uber)` uses raw `TotalEarnings` (tips included) for a different audience/report. Don't collapse these into one.
+`EPH (No tips)` and `EPH (Uber)` are two distinct, intentionally-both-kept definitions (confirmed 2026-08-26) — but not parallel/equal-status metrics: **`EPH (No tips)` is the company's actual metric** (feeds `EPH Grade` and the grading system) — tips are excluded because they're the driver's, not revenue Tower measures performance against. **`EPH (Uber)`** (raw `TotalEarnings`, tips included) exists purely as a **reconciliation check** — Uber's own platform-reported EPH includes tips and Uber doesn't expose a tips-excluded breakdown, so this measure lets Tower verify its own EPH calculation against Uber's reported total rather than being used as a metric in its own right. Don't collapse these into one, and don't treat `EPH (Uber)` as an alternate "official" EPH.
 
 ## Gap Time family
 
