@@ -32,6 +32,7 @@ This database's default schema for most SQL logins is `dbo`. That means **any un
 | `paylocity_ev_employees_detail` | 6,977 rows (stale) | 8,148 rows (current) |
 | `Paylocity_ev_Punches` | stale since 2026-08-07 | current through today |
 | `samsara_ev_safety_events` | stale since 2026-08-07 (found while building this doc — `alert_operations.py`'s `initialize_queue()` still reads this bare reference, unfixed as of this writing) | `ref.samsara_ev_safety_events`, current through today |
+| `fleetio_all_vehicles` | 676 rows, both actively updated **today** — not dead like the others, just **incomplete** | 851 rows (confirmed 2026-08-26: `std` is correct, `dbo` should still be avoided) |
 
 **Rule of thumb: always schema-qualify. If a query (yours or an existing script) references a table without `std.`/`ref.` in front of it, verify which schema it actually hit before trusting the result — don't assume it's the live one.**
 
