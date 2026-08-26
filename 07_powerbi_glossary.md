@@ -66,24 +66,27 @@ Five related measures — **confirmed with the user 2026-08-26**, resolving what
 
 ## Safety / Accidents / Incidents / Violations cluster
 
-**Confirmed distinct (2026-08-26):** two separate source tables, not overlapping terminology for the same thing.
+**Clarified 2026-08-26 (corrects the initial pass):** two genuinely distinct *sources*, but the terminology pairs within each are synonyms, not distinct sub-concepts:
 
-**`Accident Data`** (= `rpt.vw_accident_data`, the same table the Collision-Type Front/Rear classifier was built for) — manually-logged accident reports, one row per incident:
+- **"Accident" = "Collision"** — same thing. Both refer to `Accident Data` rows: a physical vehicle-to-something collision that actually occurred. Human-logged, one row per event, with fault determination and collision-type detail (Front/Rear/etc.).
+- **"Incident" = "Violation"** — same thing. Both refer to `Safety Violations` (Samsara telematics) rows: **the broader, catch-all bucket of unsafe/notable driving behavior Samsara's hardware detects in real time** — not just soft-coaching events. This includes things like running a red light, speeding, and harsh driving behaviors, *and can include a crash/collision as detected by Samsara's own sensors* as one event type among many — separate from, and not automatically reconciled with, the human-filed `Accident Data` report for the same physical event. So a single real-world crash could plausibly generate both an `Accident Data` row (filed by a person) and a `Safety Violations` row (auto-detected by telematics) — they're two independent logs of overlapping-but-not-identical scope, not a strict subset/superset relationship.
+
+**`Accident Data`** (= `rpt.vw_accident_data`, the same table the Collision-Type Front/Rear classifier was built for):
 - **`Total Accidents`** — `COUNT('Accident Data'[Vehicle Number])`
-- **`Collisions`** — `COUNT('Accident Data'[Collision Type])`
+- **`Collisions`** — `COUNT('Accident Data'[Collision Type])` — same concept as `Total Accidents`, counted via a different column; treat as synonyms unless the two columns can diverge (e.g. a row missing `Collision Type` but present in `Vehicle Number`)
 - **`at_fault`** / **`AF Accidents`** — count where `At Fault = "Yes"`
 - **`NAF Accidents`** — count where `At Fault = "No"`
 - **`Daily Average Accidents`**, **`Weekly Average Accidents`** — straightforward date/week-bucketed averages
-- **`AverageDailyIncidents`**, **`AverageDailylyIncidentsAtFault`** (note: typo "Dailyly" is in the actual measure name), **`AverageDailylyIncidentsNoAtFault`**, **`AverageWeeklyIncidentsNotAtFault`**, **`LowestAverageWeeklyIncidents`** — all further slice the same `Accident Data[Collision Type]` count by fault/day/week, restricted to `YEAR('Date') >= 2025`
+- **`AverageDailyIncidents`**, **`AverageDailylyIncidentsAtFault`** (note: typo "Dailyly" is in the actual measure name), **`AverageDailylyIncidentsNoAtFault`**, **`AverageWeeklyIncidentsNotAtFault`**, **`LowestAverageWeeklyIncidents`** — despite the "Incidents" naming, these all slice `Accident Data[Collision Type]` (i.e. they're accident/collision measures misnamed with "Incidents" — a naming inconsistency in the model itself, not a sign they pull from `Safety Violations`), by fault/day/week, restricted to `YEAR('Date') >= 2025`
 - **`Accidents per 30k miles`** — `(Total Crashes ÷ Miles Driven) × 30,000`. **⚠ `Total Crashes` is referenced here and in `Driver Rank` but has no measure definition anywhere in the model file — likely an orphaned reference to a renamed or deleted measure. Worth checking in Power BI Desktop directly (this would show as a DAX error in the model, not something visible from the exported dictionary alone).**
 
-**`Safety Violations`** (Samsara-sourced automated coaching events — matches `ref.samsara_ev_safety_events` in the SQL layer) — `[Event Type]` values seen: "no seat belt", "harsh brake", "rolling stop", "inattentive driving", "obstructed" (view), "smoking":
+**`Safety Violations`** (Samsara telematics — matches `ref.samsara_ev_safety_events` in the SQL layer) — `[Event Type]` values referenced in the `Safety KPI Avg` formula: "no seat belt", "harsh brake", "rolling stop", "inattentive driving", "obstructed" (view), "smoking" — **per the 2026-08-26 clarification, the full `Event Type` vocabulary is broader than these six** (also includes things like red-light/speeding/crash-type events); those six are just the ones this particular weighted-scoring formula assigns a penalty to, not the complete list of what `Incidents`/`Violations` counts:
 - **`Incidents`** — `DISTINCTCOUNT('Safety Violations'[Safety Events ID])`
-- **`Total Incidents`** — `COUNT('Safety Violations'[Event Type])` — ⚠ **near-duplicate of `Incidents`, not identical**: COUNT vs DISTINCTCOUNT, and a different column (`Event Type` vs `Safety Events ID`). If a Safety Events ID can have multiple Event Type rows (e.g. a single stop triggering both "harsh brake" and "rolling stop"), these two measures will disagree. Not yet confirmed which is "correct" — flag for a future round if it matters for reporting.
-- **`Total Violations`** — literally `[Incidents]` (a pure alias, not a separate definition)
+- **`Total Incidents`** — `COUNT('Safety Violations'[Event Type])` — same concept as `Incidents`/`Violations`, counted via a different column (COUNT vs DISTINCTCOUNT, `Event Type` vs `Safety Events ID`) — treat as synonyms unless a single Safety Events ID can carry multiple Event Type rows, which would make them diverge
+- **`Total Violations`** — literally `[Incidents]` (a pure alias, not a separate definition) — consistent with Incidents=Violations being the same concept
 - **`Incidents per 1k miles`** — `(Incidents ÷ Miles Driven) × 1,000`
-- **`Action`** — business rule: `IF([Incidents] > 2, "Suspension", "Coach")` — the threshold that turns raw incident counts into an HR/safety action recommendation
-- **`Safety KPI Avg`** — a weighted composite safety score per location: starts at 100, subtracts `count(violation type) × weight` for each of the six Event Types above (weights pulled from a `Target Saftey` table [sic — typo in the actual table name, not fixed here] indexed 2–7), then caps the result at 85 if there's been any at-fault accident (`at_fault > 0`) in the current filter context
+- **`Action`** — business rule: `IF([Incidents] > 2, "Suspension", "Coach")` — the threshold that turns raw incident/violation counts into an HR/safety action recommendation
+- **`Safety KPI Avg`** — a weighted composite safety score per location: starts at 100, subtracts `count(violation type) × weight` for each of the six Event Types listed above (weights pulled from a `Target Saftey` table [sic — typo in the actual table name, not fixed here] indexed 2–7), then caps the result at 85 if there's been any at-fault accident (`at_fault > 0`, i.e. from `Accident Data`) in the current filter context — note this formula deliberately only penalizes those six behavior types, not every `Event Type` value that exists
 - **`Safety KPI_Target`** — the target line itself, `Target Saftey[Index] = 1`
 
 ---
