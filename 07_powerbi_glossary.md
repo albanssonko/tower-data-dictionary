@@ -92,10 +92,9 @@ Five related measures — **confirmed with the user 2026-08-26**, resolving what
 
 Vehicle status values seen across measures (from `'fleetio-vehicle-export'[vehicle_status_name]`, i.e. `std.fleetio_all_vehicles` — see `03_fleet_vehicles.md`): `Road Ready`, `Biohazard`, `Out of service`. Separately, `'Vehicle Status Change'` table uses **`Active`**/**`OSS`** as its own from/to status values — **not yet confirmed whether `OSS` = `Out of service` and `Active` = `Road Ready` are the same underlying states under different labels, or a genuinely separate status vocabulary** tracked by whatever populates `Vehicle Status Change`. Worth a targeted question if this table gets used for anything beyond the `Active to OOS Count`/`OOS to Active Count` transition-counting measures.
 
-- **`Total Vehicles (Fleetio)`** — `DISTINCTCOUNT(license_plate)`, the base denominator most other fleet measures build on
-- **`Purchased Vehicles`** — same distinct-plate count, different name — check whether this is meant to be identical to `Total Vehicles (Fleetio)` or intentionally scoped differently (e.g. includes retired vehicles that `Total Vehicles` might exclude via a status filter elsewhere in the report)
+- **`Total Vehicles (Fleetio)`** / **`Purchased Vehicles`** — **confirmed duplicates (2026-08-26)**: both `DISTINCTCOUNT(license_plate)`, same meaning under two names. `Total Vehicles (Fleetio)` is the one other measures reference (e.g. `Road Ready + Biohazard`, `Actual Assigned - Target`), so treat it as canonical; `Purchased Vehicles` as the alias.
 - **`Road Ready`**, **`Biohazard`**, **`Road Ready + Biohazard`** — vehicle counts filtered to those specific status values
-- **`Active Vehicles`** — `Road Ready` status, distinct plate count (functionally same filter as `[Road Ready]` — check if these two should be merged)
+- **`Road Ready`** / **`Active Vehicles`** — **confirmed duplicates (2026-08-26)**: both filter `Total Vehicles (Fleetio)`/`Purchased Vehicles` to `vehicle_status_name = "Road Ready"`. `Road Ready` is the shorter name and the one composed into other measures (`Road Ready + Biohazard`, `road_ready - dispatch_target`); treat it as canonical.
 - **`Percentage Active`** — `Active Vehicles ÷ Purchased Vehicles`
 - **`Avg_MTTR_work_orders`** — Mean Time To Repair, in days: total OOS hours on completed work orders ÷ completed work order count ÷ 24
 - **`Overall Car Score`** — average of `(exterior_score + interior_score) / 2` from `fleetio_inspections`
