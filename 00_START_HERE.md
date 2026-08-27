@@ -4,9 +4,17 @@
 
 Generated 2026-08-25 by introspecting the live database (`INFORMATION_SCHEMA`/`sys.*`) plus context gathered from ~190 production Python scripts in this repo (`hr_alerts_wav.py`, `alert_operations.py`, `alert_fleet.py`, and the `Updated/` and `WAV/` folders). Row counts and columns are accurate as of generation time; re-run the queries in `_regenerate.md` periodically to refresh, since this file will drift as new columns/tables are added.
 
-## How to use this with Claude Desktop
+## How to use this — from any device, not just this desktop (added 2026-08-26)
 
-Add this whole `data_dictionary/` folder to a **Claude Desktop Project's** knowledge, alongside the `mssql` MCP connector (read-only `svc_claude_desktop_ro` login, `db_datareader` — see chat history for setup). With both in place, ask questions in plain English; Claude cross-references this glossary against the live schema instead of guessing from column names alone.
+**This entire document set is also stored directly in SQL**, in `rpt.data_dictionary_docs` (`doc_name`, `content`, `updated_at` — one row per file, `doc_name` = the filename, e.g. `07_powerbi_glossary.md`). Any Claude session with the same read-only `mssql` connector (`svc_claude_desktop_ro`, `db_datareader`) can read it with a plain query — no local folder, no Project/Cowork Context, no dependency on this machine being on:
+
+```sql
+SELECT content FROM rpt.data_dictionary_docs WHERE doc_name = '07_powerbi_glossary.md';
+```
+
+This is kept in sync automatically by the same daily 6 AM local job that refreshes the auto-generated tables (`scripts/regenerate.py` → `scripts/daily_refresh.ps1`, via a separate, narrowly-scoped writer credential — `svc_data_dictionary_writer`, write access to only this one table, verified). If you're setting up a *new* Claude session/device and want it to always have this context without asking, tell it to query `rpt.data_dictionary_docs` for the relevant `doc_name` at the start of a data question.
+
+**Alternative for this desktop specifically:** add the whole `data_dictionary/` folder to a Claude Desktop Project's Context (Cowork: Projects → "+" → "Use an existing folder"). Still works, but ties you to this machine and (unconfirmed) may not refresh live the way the SQL table does.
 
 ---
 
