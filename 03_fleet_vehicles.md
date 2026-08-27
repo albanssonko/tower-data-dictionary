@@ -24,7 +24,7 @@ Confirmed has a **better** `std` copy — use `std`, not `dbo`: `fleetio_all_veh
 - **`std.vehicle_inspections`** — Tower's own driver vehicle-inspection submissions (not a Fleetio table despite living alongside them) — pre-trip checklist results: cleanliness ratings, car-seat/safety-equipment presence, mechanical checks (`service_brakes`, `horn`, `head_lamps_brake_lights_blinkers`, `windshield`, `wipers_washers`, `tire_pressure`), photo/signature capture metadata. Only 6 rows currently — either a very new feature or narrowly piloted; don't assume this table is comprehensively populated.
 
 <!-- AUTO:BEGIN tables (regenerated daily by scripts/regenerate.py — do not hand-edit below this line) -->
-### `std.fleetio_all_vehicles`  (rows: 851 | cols: 79)
+### `std.fleetio_all_vehicles`  (rows: 82 | cols: 79)
 
 | Column | Type | Null? |
 |---|---|---|

@@ -128,7 +128,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | longitude | float | Y |
 | hash_key | nvarchar(max) | Y |
 
-### `ref.samsara_idle_times_wav`  (rows: 1,823,504 | cols: 10 | PK: id)
+### `ref.samsara_idle_times_wav`  (rows: 1,829,641 | cols: 10 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -143,7 +143,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | longitude | float | Y |
 | hash_key | nvarchar(64) | Y |
 
-### `ref.samsara_onsite_location`  (rows: 146,815,802 | cols: 12)
+### `ref.samsara_onsite_location`  (rows: 148,272,010 | cols: 12)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -160,7 +160,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | duration_hours | decimal | Y |
 | hash_key | varchar(64) | Y |
 
-### `ref.samsara_onsite_location_wav`  (rows: 75,606,501 | cols: 12)
+### `ref.samsara_onsite_location_wav`  (rows: 76,047,463 | cols: 12)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -177,7 +177,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | duration_hours | decimal | Y |
 | hash_key | varchar(64) | Y |
 
-### `ref.samsara_shift_min_distance`  (rows: 364,814 | cols: 20)
+### `ref.samsara_shift_min_distance`  (rows: 364,321 | cols: 20)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -202,7 +202,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | driver_uuid | nvarchar(100) | Y |
 | rn | bigint | Y |
 
-### `ref.samsara_shift_min_distance_wav`  (rows: 7,412 | cols: 20)
+### `ref.samsara_shift_min_distance_wav`  (rows: 7,566 | cols: 20)
 
 | Column | Type | Null? |
 |---|---|---|
