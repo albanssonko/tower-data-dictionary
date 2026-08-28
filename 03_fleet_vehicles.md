@@ -24,7 +24,7 @@ Confirmed has a **better** `std` copy — use `std`, not `dbo`: `fleetio_all_veh
 - **`std.vehicle_inspections`** — Tower's own driver vehicle-inspection submissions (not a Fleetio table despite living alongside them) — pre-trip checklist results: cleanliness ratings, car-seat/safety-equipment presence, mechanical checks (`service_brakes`, `horn`, `head_lamps_brake_lights_blinkers`, `windshield`, `wipers_washers`, `tire_pressure`), photo/signature capture metadata. Only 6 rows currently — either a very new feature or narrowly piloted; don't assume this table is comprehensively populated.
 
 <!-- AUTO:BEGIN tables (regenerated daily by scripts/regenerate.py — do not hand-edit below this line) -->
-### `std.fleetio_all_vehicles`  (rows: 82 | cols: 79)
+### `std.fleetio_all_vehicles`  (rows: 851 | cols: 79)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -61,7 +61,7 @@ Confirmed has a **better** `std` copy — use `std`, not `dbo`: `fleetio_all_veh
 
 _+ 49 more columns (truncated for brevity):_ model, estimated_replacement_mileage, service_entries_count, inserted_at, out_of_service_meter_value, estimated_service_months, cf_fastrak_code, secondary_meter_unit, vin, registration_expiration_month, images_count, specs, group_ancestry, vehicle_type_id, work_orders_count, issues_count, fuel_type_name, in_service_meter_value, group_name, cf_remote, assetable_type, ai_enabled, archived_at, vehicle_status_name, axle_config_id, license_plate, cf_out_of_service_location, is_sample, cf_purchase_entity, vehicle_type_name, secondary_meter_value, cf_oos_description, current_location_entry_id, account_id, out_of_service_date, group_id, service_reminders_count, primary_meter_value, primary_meter_unit, driver, trim, cf_location_of_original_title, cf_gas_card, cf_af_accident_, cf_car_seat, cf_carseat, cf_uuid, cf_panic_button, cf_decommission_
 
-### `std.fleetio_contacts`  (rows: 11,792 | cols: 46)
+### `std.fleetio_contacts`  (rows: 11,795 | cols: 46)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -230,7 +230,7 @@ _+ 16 more columns (truncated for brevity):_ part_manufacturer_part_number, part
 | service_task_name | nvarchar(max) | Y |
 | default_reason_for_repair_code | nvarchar(max) | Y |
 
-### `std.vehicle_inspections`  (rows: 0 | cols: 53 | PK: id)
+### `std.vehicle_inspections`  (rows: 647 | cols: 53 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|

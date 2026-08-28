@@ -15,7 +15,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 - **`ref.samsara_tag`** — tiny lookup (216 rows) of Samsara's tag/grouping taxonomy (`id`, `name`, `parentTagId` for a hierarchy).
 
 <!-- AUTO:BEGIN tables (regenerated daily by scripts/regenerate.py — do not hand-edit below this line) -->
-### `std.samsara_drivers`  (rows: 10,588 | cols: 28)
+### `std.samsara_drivers`  (rows: 10,594 | cols: 28)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -88,7 +88,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | engine_state | varchar(10) | Y |
 | fleet | varchar(50) | Y |
 
-### `ref.samsara_ev_safety_events`  (rows: 348,103 | cols: 20 | PK: id)
+### `ref.samsara_ev_safety_events`  (rows: 348,175 | cols: 20 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -128,7 +128,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | longitude | float | Y |
 | hash_key | nvarchar(max) | Y |
 
-### `ref.samsara_idle_times_wav`  (rows: 1,829,641 | cols: 10 | PK: id)
+### `ref.samsara_idle_times_wav`  (rows: 1,842,632 | cols: 10 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -143,7 +143,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | longitude | float | Y |
 | hash_key | nvarchar(64) | Y |
 
-### `ref.samsara_onsite_location`  (rows: 148,272,010 | cols: 12)
+### `ref.samsara_onsite_location`  (rows: 151,172,366 | cols: 12)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -160,7 +160,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | duration_hours | decimal | Y |
 | hash_key | varchar(64) | Y |
 
-### `ref.samsara_onsite_location_wav`  (rows: 76,047,463 | cols: 12)
+### `ref.samsara_onsite_location_wav`  (rows: 76,839,499 | cols: 12)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -177,7 +177,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | duration_hours | decimal | Y |
 | hash_key | varchar(64) | Y |
 
-### `ref.samsara_shift_min_distance`  (rows: 364,321 | cols: 20)
+### `ref.samsara_shift_min_distance`  (rows: 365,949 | cols: 20)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -202,7 +202,7 @@ Samsara provides in-vehicle telematics/dashcam hardware — driver safety events
 | driver_uuid | nvarchar(100) | Y |
 | rn | bigint | Y |
 
-### `ref.samsara_shift_min_distance_wav`  (rows: 7,566 | cols: 20)
+### `ref.samsara_shift_min_distance_wav`  (rows: 7,743 | cols: 20)
 
 | Column | Type | Null? |
 |---|---|---|

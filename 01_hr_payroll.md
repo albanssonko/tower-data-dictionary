@@ -91,7 +91,7 @@ _+ 74 more columns (truncated for brevity):_ federalTax_filingStatus, federalTax
 
 _+ 106 more columns (truncated for brevity):_ primaryPayRate_baseRate, primaryPayRate_changeReason, primaryPayRate_defaultHours, primaryPayRate_effectiveDate, primaryPayRate_beginCheckDate, primaryPayRate_isAutoPay, primaryPayRate_payFrequency, primaryPayRate_payType, primaryPayRate_ratePer, primaryPayRate_salary, primaryStateTax_amount, primaryStateTax_exemptions, primaryStateTax_exemptions2, primaryStateTax_filingStatus, primaryStateTax_percentage, primaryStateTax_specialCheckCalc, primaryStateTax_taxCalculationCode, primaryStateTax_taxCode, primaryStateTax_w4FormYear, status_changeReason, status_effectiveDate, status_employeeStatus, status_beginCheckDate, status_hireDate, status_isEligibleForRehire, status_statusType, status_terminationDate, workAddress_location, workAddress_address1, workAddress_city, workAddress_country, workAddress_state, workAddress_postalCode, homeAddress_address1, homeAddress_city, homeAddress_country, homeAddress_county, homeAddress_emailAddress, homeAddress_mobilePhone, homeAddress_state, homeAddress_postalCode, webTime_isTimeLaborEnabled, webTime_chargeRate, companyName, companyFEIN, benefitSetup_benefitClass, benefitSetup_benefitClassEffectiveDate, benefitSetup_benefitSalary, benefitSetup_doNotApplyAdministrativePeriod, benefitSetup_isMeasureAcaEligibility, departmentPosition_jobTitle, departmentPosition_positionCode, departmentPosition_reviewerCompanyNumber, departmentPosition_reviewerEmployeeId, federalTax_deductionsAmount, workAddress_emailAddress, webTime_badgeNumber, homeAddress_address2, custom_Driver_License, departmentPosition_equalEmploymentOpportunityClass, workAddress_phone, customBooleanFields, federalTax_higherRate, middleName, preferredName, maritalStatus, status_reHireDate, homeAddress_phone, emergencyContacts, departmentPosition_changeReason, ethnicity, workAddress_county, primaryPayRate_payRateNote, federalTax_otherIncomeAmount, priorLastName, statusCode, statusTypeCode, status_adjustedSeniorityDate, veteranDescription, workAddress_mobilePhone, custom_Expiration_Date, customDropDownFields, lat, lng, federalTax_exemptions, customNumberFields, departmentPosition_clockBadgeNumber, custom_Exclude_from_ADP, taxSetup_fitwExemptReason, taxSetup_futaExemptReason, taxSetup_medExemptReason, taxSetup_sitwExemptReason, taxSetup_ssExemptReason, taxSetup_suiExemptReason, custom_Tower_Email_Address, custom_Uber_Teens, isRothCatchupRequiredEmployee, _payload_hash, salutation, workEligibility_isI9Verified, workEligibility_isSsnVerified, workEligibility_foreignPassportNumber, workEligibility_alienOrAdmissionDocumentNumber, workEligibility_i94AdmissionNumber, workEligibility_workAuthorization, workEligibility_workUntil
 
-### `std.paylocity_wav_employees_detail`  (rows: 2,908 | cols: 140)
+### `std.paylocity_wav_employees_detail`  (rows: 2,910 | cols: 140)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -219,7 +219,7 @@ _+ 110 more columns (truncated for brevity):_ departmentPosition_isUnionDuesColl
 | segment_applyToDate | nvarchar(10) | Y |
 | legacyAssignmentId | nvarchar(max) | Y |
 
-### `std.paylocity_ev_shift_unified`  (rows: 341,740 | cols: 25 | PK: shiftId, employeeId)
+### `std.paylocity_ev_shift_unified`  (rows: 341,821 | cols: 25 | PK: shiftId, employeeId)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -279,7 +279,7 @@ _+ 110 more columns (truncated for brevity):_ departmentPosition_isUnionDuesColl
 | assignedTo_companyId | varchar(max) | Y |
 | assignedTo_employeeId | varchar(max) | Y |
 
-### `std.paylocity_ev_punches`  (rows: 1,041,344 | cols: 42)
+### `std.paylocity_ev_punches`  (rows: 1,043,753 | cols: 42)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -381,7 +381,7 @@ _+ 12 more columns (truncated for brevity):_ last_updated_at, relativeOriginalEn
 | primaryStateTax_taxCode | varchar(50) | Y |
 | preferredName | varchar(50) | Y |
 
-### `ref.paylocity_av_employees_basic`  (rows: 53 | cols: 7)
+### `ref.paylocity_av_employees_basic`  (rows: 54 | cols: 7)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -393,7 +393,7 @@ _+ 12 more columns (truncated for brevity):_ last_updated_at, relativeOriginalEn
 | status | varchar(20) | Y |
 | statusType | varchar(20) | Y |
 
-### `ref.paylocity_ev_employees_basic`  (rows: 8,166 | cols: 7 | PK: id)
+### `ref.paylocity_ev_employees_basic`  (rows: 8,185 | cols: 7 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -405,7 +405,7 @@ _+ 12 more columns (truncated for brevity):_ last_updated_at, relativeOriginalEn
 | status | varchar(20) | Y |
 | statusType | varchar(20) | Y |
 
-### `ref.paylocity_wav_employees_basic`  (rows: 2,929 | cols: 7)
+### `ref.paylocity_wav_employees_basic`  (rows: 2,931 | cols: 7)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -584,7 +584,7 @@ _+ 3 more columns (truncated for brevity):_ w2Box, relatedDeductionCode, benefit
 | processedAt | datetime2 | N |
 | rotationApplied | smallint | Y |
 
-### `ref.paylocity_document_ocr_rename_ev`  (rows: 0 | cols: 13 | PK: id)
+### `ref.paylocity_document_ocr_rename_ev`  (rows: 760 | cols: 13 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
