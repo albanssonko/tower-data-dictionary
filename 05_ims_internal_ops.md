@@ -37,7 +37,7 @@ Full column lists below are the raw schema — no per-column business notes are 
 | updated_at | datetime2 | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_drivers`  (rows: 12,225 | cols: 19 | PK: id)
+### `std.ims_drivers`  (rows: 12,228 | cols: 19 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -121,7 +121,7 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | updated_at | datetime2 | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_facilities_request_comments`  (rows: 15 | cols: 11 | PK: id)
+### `std.ims_facilities_request_comments`  (rows: 16 | cols: 11 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -202,7 +202,7 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | notes_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_hr_clerk_mails`  (rows: 1,936 | cols: 26 | PK: id)
+### `std.ims_hr_clerk_mails`  (rows: 1,964 | cols: 26 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -233,7 +233,7 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | attachments_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_lost_found_items`  (rows: 105 | cols: 23 | PK: id)
+### `std.ims_lost_found_items`  (rows: 106 | cols: 23 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -261,7 +261,7 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | photos_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_marketing_request_comments`  (rows: 184 | cols: 11 | PK: id)
+### `std.ims_marketing_request_comments`  (rows: 187 | cols: 11 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -337,7 +337,7 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | unifiData_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_off_cycles`  (rows: 145 | cols: 14 | PK: id)
+### `std.ims_off_cycles`  (rows: 150 | cols: 14 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -413,7 +413,7 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | scans_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_security_alerts`  (rows: 477 | cols: 21 | PK: id)
+### `std.ims_security_alerts`  (rows: 496 | cols: 21 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -569,7 +569,7 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | attachments_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `std.ims_work_requests`  (rows: 7 | cols: 30 | PK: id)
+### `std.ims_work_requests`  (rows: 8 | cols: 30 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -632,7 +632,7 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | contact_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `ref.ims_permissions`  (rows: 987 | cols: 12 | PK: id)
+### `ref.ims_permissions`  (rows: 989 | cols: 12 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -706,7 +706,7 @@ _+ 3 more columns (truncated for brevity):_ updated_at, schedule_json, backup_sy
 | settings_json | nvarchar(max) | Y |
 | backup_synced_at | datetime2 | N |
 
-### `ref.ims_users`  (rows: 218 | cols: 14 | PK: id)
+### `ref.ims_users`  (rows: 219 | cols: 14 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
