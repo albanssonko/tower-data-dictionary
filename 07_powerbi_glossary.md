@@ -4,7 +4,9 @@ Companion to [`00_START_HERE.md`](00_START_HERE.md) through [`06_external_misc.m
 
 Source: `PowerBI_Model_Dictionary.md` (generated 2026-08-26 via Tabular Editor C# script, from `C:\Users\Alban Ssonko\Downloads\extract_model_dictionary (2).csx`), which pulls DAX/M directly from the live model — treat that file's formulas as authoritative when this glossary and the raw DAX ever disagree.
 
-**Status: complete pass (2026-08-26).** All 324 measures, all 79 calculated columns, and all 47 Power Query M table-load definitions have been read. See the "Coverage note" near the end of this file for exactly what got deep-dived vs. lineage-only, and the small list of genuinely open items (an orphaned `Total Crashes` reference that needs Power BI Desktop to resolve, and a couple of lower-traffic queries not transcribed line-by-line). This pass also found and fixed a real gap from the first pass: `EPM`/`actual_trip_fare` don't exist as SQL columns anywhere (they're computed in Power Query), which caused a live query failure before this file explained why — see the warning section immediately below.
+**Status: complete pass (2026-08-26), merged with a v2 pass (2026-09-02).** All 324 measures, all 79 calculated columns, and all 47 Power Query M table-load definitions have been read. See the "Coverage note" near the end of this file for exactly what got deep-dived vs. lineage-only, and the small list of genuinely open items (an orphaned `Total Crashes` reference that needs Power BI Desktop to resolve, and a couple of lower-traffic queries not transcribed line-by-line). This pass also found and fixed a real gap from the first pass: `EPM`/`actual_trip_fare` don't exist as SQL columns anywhere (they're computed in Power Query), which caused a live query failure before this file explained why — see the warning section immediately below.
+
+**2026-09-02 v2 merge:** a second, independent pass (`Tower_EV_KPI_Report_Model_Documentation.md`, generated via live Power BI Desktop connection through `powerbi-modeling-mcp` — a different tool than the Tabular Editor script above) wrote a `description` property on every table/measure/column directly in-model and re-verified the DAX/M. Its findings are folded into this file below (new DAX issues, hardcoded constants, and — most useful for query-writing — the full per-table SQL source mapping in the new appendix near the end). One unresolved discrepancy between the two passes, noted rather than silently picked: this pass counted **324** measures, the 2026-09-02 pass counted **323** — a one-measure drift (rename or deletion) that neither pass traces to a specific measure; worth a quick recount in Power BI Desktop if it matters for something.
 
 ---
 
@@ -84,7 +86,9 @@ The model's central pattern: four raw KPIs, each turned into a per-driver A/B/C/
 - **`(A) <KPI>` / `(B) <KPI>` / `(C) <KPI>` / `(D) <KPI>`** — count of drivers falling in that grade band
 - **`% A <KPI>` / `% B <KPI>` / etc.** — that count ÷ total distinct drivers
 - **`<KPI> Grade`** — the per-driver letter itself (used for row-level grade lookup/coloring)
-- **`Count of A/B/C/D Grades`** and **`% (Grade A/B/C/D) Drivers`** — same pattern applied to **`Overall Grade`** (a composite across all four KPIs — not yet reviewed in detail this pass)
+- **`Count of A/B/C/D Grades`** and **`% (Grade A/B/C/D) Drivers`** — same pattern applied to **`Overall Grade`** / **`Overall Score`**. **Resolved 2026-09-02 (was "not yet reviewed" here):** despite being nominally a composite across all four KPIs, the EPH and Gap Time contribution terms are present in the DAX but **commented out** of both `Overall Grade` and `Overall Score` — so neither currently influences the composite, even though EPH and Gap Time grading are otherwise fully computed elsewhere in the model. Anyone relying on "Overall Grade" as a true all-KPI composite should know it's currently AR/CR/UR only.
+
+**Two more confirmed issues in this family (2026-09-02):** **`% B CR`/`% C CR`** appear swapped — `% B CR` divides by `(C) CR` and vice versa. **`UR Grade`**'s "A" boundary (`<= 5.0`) makes nearly all realistic driver-rating values grade "A", since ratings rarely exceed 5.0 — the band is nominally A/B/C/D but in practice almost never produces anything but A.
 
 `EPH (No tips)` and `EPH (Uber)` are two distinct, intentionally-both-kept definitions (confirmed 2026-08-26) — but not parallel/equal-status metrics: **`EPH (No tips)` is the company's actual metric** (feeds `EPH Grade` and the grading system) — tips are excluded because they're the driver's, not revenue Tower measures performance against. **`EPH (Uber)`** (raw `TotalEarnings`, tips included) exists purely as a **reconciliation check** — Uber's own platform-reported EPH includes tips and Uber doesn't expose a tips-excluded breakdown, so this measure lets Tower verify its own EPH calculation against Uber's reported total rather than being used as a metric in its own right. Don't collapse these into one, and don't treat `EPH (Uber)` as an alternate "official" EPH.
 
@@ -102,6 +106,20 @@ The model's central pattern: four raw KPIs, each turned into a per-driver A/B/C/
 - **`Gaptime P/driver`** — `Gap Hours ÷ hours_per_driver`
 
 Naming is inconsistent across this family (`Gap Time` / `Gap Hours` / `Gaptime` all appear) — that's the model's existing convention, not something to "fix" without being asked.
+
+## Hardcoded business constants across the model (2026-09-02 pass)
+
+None of these live in a parameter table — they're literals baked directly into DAX, so changing the business rule means editing the measure, not a config table:
+
+| Constant | Where |
+|---|---|
+| 12% acceptable gap-time threshold | `Gap time Variance` (see above) |
+| $18/hr gap-time dollar rate | `Gap time Variance ($)` (see above) |
+| March 2025 date exclusion | `Gap Hours` (see above) |
+| Mission/Douglas-only location list | `avg_dispatch` (`_fleetio`) |
+| 3.8 drivers-per-car ratio | `Target Drivers (Based on Cars Active)` (`HR Target`) |
+| 90 miles/day (driver) and 100 miles/day (location) mileage expectations | `Driver Rank` / `Table Rank` (`_measuresTable`) |
+| `What-if-period` hardcoded to 8, unused | `What if Hire` — a separate hardcode of 40 is used instead by the sibling measure `What-if-Active`, so `What-if-period` currently has no effect |
 
 ## Attendance family
 
@@ -150,6 +168,8 @@ Five related measures — **confirmed with the user 2026-08-26**, resolving what
 - **`Safety KPI Avg`** — a weighted composite safety score per location: starts at 100, subtracts `count(violation type) × weight` for each of the six Event Types listed above (weights pulled from a `Target Saftey` table [sic — typo in the actual table name, not fixed here] indexed 2–7), then caps the result at 85 if there's been any at-fault accident (`at_fault > 0`, i.e. from `Accident Data`) in the current filter context — note this formula deliberately only penalizes those six behavior types, not every `Event Type` value that exists
 - **`Safety KPI_Target`** — the target line itself, `Target Saftey[Index] = 1`
 
+**⚠️ Grading-parameter fallback inconsistency (2026-09-02):** the 19 grade-threshold what-if tables (§ "Fleet / vehicle status terms" note above, and generally) fall back to `Grading Targets[Scale]` when nothing is selected — **except** `Safety Grade B/C Value` (`Violations Grade B/C`), which has no fallback and returns blank if unselected, unlike its sibling grade-parameter measures.
+
 ---
 
 ## Fleet / vehicle status terms (`_fleetio` measure folder)
@@ -162,6 +182,7 @@ Vehicle status values seen across measures (from `'fleetio-vehicle-export'[vehic
 - **`Percentage Active`** — `Active Vehicles ÷ Purchased Vehicles`
 - **`Avg_MTTR_work_orders`** — Mean Time To Repair, in days: total OOS hours on completed work orders ÷ completed work order count ÷ 24
 - **`Overall Car Score`** — average of `(exterior_score + interior_score) / 2` from `fleetio_inspections`
+- **⚠️ `active_11am`/`active_11pm`** (2026-09-02) — inconsistent aggregation: one uses `DISTINCTCOUNT`, the other plain `COUNT`. Don't assume they're computed the same way just because they're a matched AM/PM pair.
 
 **`Vehicle Status Change`'s `Active`/`OSS` vocabulary, resolved (2026-08-26, moderate confidence):** these come from a different source than `fleetio_all_vehicles.vehicle_status_name` — specifically `rpt.vehicle_status_shift`, a status-transition log with only `from_vehicle_status_id`/`to_vehicle_status_id` values `Active`/`OSS`. This looks like a simplified binary bucketing (OOS-type statuses collapsed into one `OSS` value) rather than the full `Road Ready`/`Out of Service`/`Biohazard`/etc. vocabulary on `fleetio_all_vehicles` — but what populates `rpt.vehicle_status_shift` and maps the richer statuses down to two buckets wasn't traced this pass. Treat `OSS` ≈ "any out-of-service-type status" until confirmed further.
 
@@ -264,14 +285,90 @@ Distinct from the `terminated_paylocity*`/`turnover_recently_active_drivers` clu
 
 Sources from `vw_zeem_battery_degradation` (bare, `dbo`-only — no `std` equivalent checked). Tracks per-vehicle battery State of Health (`state_of_health_pct`), charge session efficiency (`kwh_per_mile`/`miles_per_kwh`), and a `health_status` field with at least `Dispose`/`Plan Replacement` values feeding the `Vehicles to dispose now`/`Vehicles to plan replacement`/`Vehicles under 75% SoH` fleet-lifecycle-planning measures. Distinct from `std.charging_sessions` (documented in `06_external_misc.md`) — that one is OCPP charging-session protocol data; `zeem` is battery-health/degradation tracking, apparently a different vendor integration ("Zeem" — see `zeem_charging.py` in the repo).
 
+**⚠️ `Avg session duration (min)`** (2026-09-02) — averages `energy_kwh`, not `duration_minutes`. Looks like a copy-paste bug in the DAX; the measure name and what it actually computes don't match. Don't trust its value for anything duration-related.
+
+## Report-helper / what-if table quirks (2026-09-02)
+
+Two small lookup tables back dropdown-style selectors elsewhere in the model, and both have a gap worth knowing before trusting a selection:
+
+- **`Metrics`** (`Metric`, `Index` columns) → its one local measure, **`Average Metric Value`**, `SWITCH`es on the selected `Metric` value — but the `Metric` column includes an "Uber Logout" option with **no matching case** in the `SWITCH`. Selecting it returns blank, not an error, so a blank result here doesn't necessarily mean no data.
+- **`Hours Type`** (`Type` column) → its local measure, **`uber_live_status`**, has an "Online" case written into the formula but **commented out**. If "Online" is a selectable value in the table, choosing it also silently returns blank.
+
 ---
+
+## Appendix: Power BI table → SQL source, all 87 tables (2026-09-02 pass)
+
+The `EPM`/`rpt.DriverTripActivity` trap above (and the `dbo` shadow-table bug) are the two examples already called out in depth. This appendix is the same exercise done for **every** Power BI table — so instead of opening Power BI Desktop to check what a table actually queries, check here first. "Bare" means no schema prefix in the M query — per `00_START_HERE.md`'s `dbo` trap, that resolves to whatever the login's default schema is (`dbo`), which may or may not be the live copy.
+
+**Uber Operations**
+
+| Power BI table | SQL source | Load | Notes |
+|---|---|---|---|
+| Uber Trip Activity | `rpt.DriverTripActivity` (+ `vw_all_drivers` join) | incremental, 4yr rolling/3-day | Full lineage above — recomputes `actual_trip_fare`, `EPM`, `Trip Time (Hours)`; blank `product_type` → `'*Unknown'` |
+| Uber Driver Activity | `std.uber_ev_driver_activity` | incremental | Parses `TimeOnTrip`/`TimeOnline` (`'DD:HH:MM'` text) to decimal hours; `Re-dispatched` flag via self-join to `audit.vw_driver_shifts`. Prefer `rpt.vw_uber_ev_driver_activity_hours` — same hours columns, no slow join |
+| Uber Driver Payments | `std.uber_ev_driver_payments` | incremental | `Actual Net Fare` methodology switch at 2025-12-01 (below); `Pay Date` = week start + 11 days; excludes `DriverUUID 9b63e6e2-16f8-4224-9d77-fd731eb51fec`. Prefer `rpt.vw_uber_ev_driver_payments_enriched` |
+| Uber Driver Quality | `std.uber_ev_driver_quality` | incremental | Straight pull, lowercases `driver_uuid` for joins |
+| Uber Driver Shifts | `audit.vw_driver_shifts` | incremental | AM (4am–3pm) / PM bucket by login time; `redispatched_same_shift`/`plate_mismatch` via window functions. Slow — see `dispatch_type` warning above |
+| uber_live_driver_status | `audit.vw_driver_shifts` | DirectQuery, incremental window | Live feed |
+| Uber Payment Orders | `uber_payment_orders_new` (bare) | incremental | Filtered to `description = 'so.payout'` |
+| uber_teens | `raw.uber_reserve_trips` | incremental | Dedup one row per `trip_uuid` |
+| car_seat_paired | Uber trip activity + car-seat-trained roster + equipped-vehicle list | DirectQuery | Trips per driver/vehicle/day |
+| uber_ev_auto_pos | `dbo.uber_ev_auto_pos` | DirectQuery | Type-safe casts on all timestamp/numeric fields |
+
+**Fleet / Vehicle**
+
+| Power BI table | SQL source | Load | Notes |
+|---|---|---|---|
+| fleetio-vehicle-export | `std.fleetio_all_vehicles` + most-recent-open-work-order join | DirectQuery | Filtered to 2 Fleetio group IDs |
+| fleetio-vehicle-renewals | `vw_vehicles_ancestry` (bare) | — | VIN pull only |
+| fleetio_ev_work_orders / fleetio_ev_work_orders (2) | `rpt.fleet_work_orders` | incremental | `(2)` = same source filtered to `Completed`, one row per vehicle (most recent only). Computes `Total Cost`, `hours_oos`/`Service Time (mins)`, `Due Status` |
+| fleetio_inspections | `vw_fleetio_inspections_carwash` (bare) | incremental | Most complex M query in the model — multi-step employeeId fallback, joins punches + Uber shifts, ±180min sanity-check guards |
+| Vehicle Status Change / Vehicle Inventory Status | `rpt.vehicle_status_shift` | incremental / full snapshot | Day-by-vehicle OOS timeline from status-change gaps; Inventory Status recurses a full date series per vehicle (`OPTION (MAXRECURSION 3660)`). ⚠ both affected by the bare-`fleetio_all_vehicles` bug — see `00_START_HERE.md` |
+| Samsara Vehicles | `samsara_vehicle` joined to Fleetio by name-prefix match | — | 2 fleet group IDs |
+| samsara_assets | `vw_samsara_assets_location_unique` (bare) | DirectQuery | |
+| samsara_trips | `raw.samsara_trips` | incremental | Unix epoch ms → date, meters → miles |
+| parking_tickets | `rpt.vw_parking_tickets` | DirectQuery | Straight pull |
+| Accident Data | `rpt.vw_accident_data` | incremental | Derives `Collision Type Category` (Front/Rear) from keyword match on `Collision Type` text |
+
+**EV Charging**
+
+| Power BI table | SQL source | Load | Notes |
+|---|---|---|---|
+| zeem | `vw_zeem_battery_degradation` (bare, `dbo`-only) | full pull | All SoH/efficiency computation happens upstream in the view, not in this query |
+
+**HR / Payroll / Scheduling**
+
+| Power BI table | SQL source | Load | Notes |
+|---|---|---|---|
+| Paylocity Punches | `dbo.test_punches` | incremental, 21-day window | Computes `Period` (pre/post Oct-2025 cutover), `OT` (hours beyond 8.5), `Meal Premium` (flag if 5+ hrs between shift start and lunch). Name suggests staging but confirmed legitimate — see `'All Drivers'` lineage above |
+| paylocity_payments | `std.paylocity_ev_payments` | incremental | |
+| schedule-paylocity | `vw_paylocity_ev_shift_unified_pacific` (bare) | incremental | Left-joined to punches for Show/No-Show; This-Week/Next-Week/Other labels, DST-aware AM/PM date-range split |
+| schedule-paylocity (off) | `std.paylocity_ev_payments` filtered to PTO/HOL/SICK/UTO/BRVMT etc. | incremental | Saturday dates shifted back 10 days — a payroll-calendar quirk, not a bug |
+| schedule Targets | SharePoint `Tower EV - Targets.xlsx`, "Targets Scheduling" sheet | — | Unpivoted from a wide day-by-hour grid |
+| freshsales_contacts | `ref.freshsales_contacts` filtered `custom_field_cf_buisness = 'EV'` | incremental | ⚠ pulls the plaintext-password column straight from source — see `06_external_misc.md` |
+| Locations | SharePoint `Tower EV - Locations.xlsx` | — | Excludes "Tower WAV" and "WMATA" locations |
+| userm | `dbo.uber_all_drivers` filtered `org_name = 'TOWER WAV LLC - W2'` | — | Reformats first/last name into proper-case `Full Name` |
+| Grading Targets | a `kpi_grading` table (schema not specified in the M query) | — | `kpi_grading` exists in both `dbo` and `stg`, identical 32 rows (`00_START_HERE.md`) — which one this table reads was not confirmed either pass |
+| Survey | SharePoint `Tower EV Driver Exit Survey.xlsx` | — | Normalizes free-text dispatch-communication ratings to a consistent A–F scale |
+| Termination Category | SharePoint `Termination_Reasons_List.xlsx` | — | Reason text uppercased/trimmed for join matching |
+| Weighted Avg Score, Targets Ops, Target Saftey, Target Dispatch | SharePoint `Tower EV - Targets.xlsx` (other sheets) | — | |
+
+**Calculated in DAX — no external source**
+
+- `Date`, `Date_table` — `CALENDAR()` (2024–2027) + `ADDCOLUMNS` for derived date attributes
+- `Metrics`, `Report Rows` — `DATATABLE()` hardcoded lookup lists
+- `Summary` — `SELECTCOLUMNS(CROSSJOIN(...))` of every driver location × every date since 2024-09-12
+- `license_plate` — `DISTINCT('fleetio-vehicle-export'[license_plate])`
+- All 19 grade-threshold tables, plus `Freshsales Hire Target`, `Freshsales Termation Estimate`, `What if Cars`, `What if Hire`, `What-if Drivers Per Car`, `Running Avg Days` — `GENERATESERIES()`; these are report-adjustable what-if slicers, **not** static values, despite some earlier passes characterizing a couple of them that way
+- `_measuresTable`, `_fleetio`, `_safety_measures`, `_scheduling_measures`, `_zeem_measures`, `html`, `_freshsales`, `_fleet` — `Row("Column", BLANK())` placeholders; exist only to host measures, not data
 
 ## Coverage note
 
 This pass reviewed: all measure display folders (`_fleetio`, `_measuresTable`, `_safety_measures`, `_scheduling_measures`, `_zeem_measures`), the Freshsales hiring-funnel measures in `Date_table`, the remaining ungrouped measure tables (`Summary`, `Report Rows`, `Vehicle Inventory Status`, `Vehicle Status Change`, `Targets`/What-If groups, etc.), the Calculated Columns section (found: 71 of 79 are unusable placeholders — "derived from calculated table" — the extraction tool didn't capture DAX-calculated-table expressions; the 8 that did have real formulas are folded into the sections above), and all 47 Power Query M table-load definitions (table/schema lineage extracted for every one; full formula-level detail captured for the highest-traffic tables — `All Drivers`, `Uber Trip Activity`, `Uber Driver Activity`, `Uber Driver Payments`, `Vehicle Inventory Status`, `Vehicle Status Change`, `fleetio_ev_work_orders`, `fleetio_inspections`).
 
-**Genuinely still open:**
+**Genuinely still open (confirmed still open as of the 2026-09-02 pass too — neither pass resolved these):**
 - `Total Crashes` orphaned reference (referenced by `Accidents per 30k miles` and `Driver Rank`, defined nowhere) — needs checking directly in Power BI Desktop/Tabular Editor, not resolvable from a static export
-- The exact mapping of `rpt.vehicle_status_shift`'s `Active`/`OSS` values back to Fleetio's full status vocabulary — what populates that table wasn't traced
-- Fully line-by-line formula detail for the lower-traffic M queries (`parking_tickets`, `Samsara Vehicles`, `samsara_trips`, `Uber Payment Orders`, `uber_teens`, `userm`, etc.) — schema/table lineage is captured for all of them, but not every WHERE-clause business rule was transcribed
-6. `Vehicle Status Change`'s `Active`/`OSS` vocabulary vs. Fleetio's `Road Ready`/`Out of service` — same states or different?
+- The exact mapping of `rpt.vehicle_status_shift`'s `Active`/`OSS` values back to Fleetio's full status vocabulary (`Road Ready`/`Out of service`/`Biohazard`) — what populates that table wasn't traced by either pass
+- Which schema (`dbo` or `stg`) the `Grading Targets` table's `kpi_grading` source actually reads from (both exist, both 32 rows, M query doesn't say)
+- Fully line-by-line formula detail for the lower-traffic M queries (`parking_tickets`, `Samsara Vehicles`, `samsara_trips`, `Uber Payment Orders`, `uber_teens`, `userm`, etc.) — schema/table lineage is captured for all of them (see the appendix above), but not every WHERE-clause business rule was transcribed
+- The 324-vs-323 measure count discrepancy between the two passes (see top of file)
