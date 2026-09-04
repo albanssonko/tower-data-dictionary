@@ -13,7 +13,7 @@ Assorted external-system integrations that don't fit the core HR/Uber/Fleetio/Sa
 - **`std.epn_review`** — driver license/compliance violation review tracking (`DL Number`, `Violation Date`, `Conviction Date`, `Section(s) Violated`, `Management Decision`/`Recommendation`, linked to `Employee ID`/`Uber ID`). Currently empty (0 rows) — either a new/unused feature or populated ad hoc outside the normal ETL cadence; don't assume it's kept current.
 
 <!-- AUTO:BEGIN tables (regenerated daily by scripts/regenerate.py — do not hand-edit below this line) -->
-### `ref.freshsales_contacts`  (rows: 237,492 | cols: 228)
+### `ref.freshsales_contacts`  (rows: 237,626 | cols: 228)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -121,7 +121,7 @@ _+ 198 more columns (truncated for brevity):_ custom_field_cf_did_dapta_call_the
 
 _+ 3 more columns (truncated for brevity):_ relay_unknown_only_int, relayhost, rl
 
-### `ref.weather`  (rows: 101,166 | cols: 78 | PK: id)
+### `ref.weather`  (rows: 101,410 | cols: 78 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -185,7 +185,7 @@ _+ 48 more columns (truncated for brevity):_ wind_speed_10m_max, wind_gusts_10m_
 | engineIdleTimeDurationMs | bigint | Y |
 | date | date | Y |
 
-### `ref.FuelAndEnergyWAV`  (rows: 96,688 | cols: 15)
+### `ref.FuelAndEnergyWAV`  (rows: 96,788 | cols: 15)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -205,7 +205,7 @@ _+ 48 more columns (truncated for brevity):_ wind_speed_10m_max, wind_gusts_10m_
 | engineIdleTimeDurationMs | bigint | Y |
 | date | date | Y |
 
-### `std.charging_sessions`  (rows: 145,014 | cols: 34)
+### `std.charging_sessions`  (rows: 145,535 | cols: 34)
 
 | Column | Type | Null? |
 |---|---|---|
