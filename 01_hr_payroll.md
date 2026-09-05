@@ -54,7 +54,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for the AV/EV/WAV convention, univers
 
 _+ 74 more columns (truncated for brevity):_ federalTax_filingStatus, federalTax_percentage, federalTax_taxCalculationCode, federalTax_w4FormYear, primaryPayRate_annualSalary, federalTax_dependentsAmount, primaryPayRate_baseRate, primaryPayRate_changeReason, primaryPayRate_defaultHours, primaryPayRate_effectiveDate, primaryPayRate_beginCheckDate, primaryPayRate_isAutoPay, primaryPayRate_payFrequency, primaryPayRate_payType, primaryPayRate_ratePer, primaryPayRate_salary, primaryStateTax_amount, primaryStateTax_exemptions, primaryStateTax_exemptions2, primaryStateTax_filingStatus, primaryStateTax_percentage, primaryStateTax_specialCheckCalc, primaryStateTax_taxCalculationCode, primaryStateTax_taxCode, primaryStateTax_w4FormYear, status_changeReason, status_effectiveDate, status_employeeStatus, status_beginCheckDate, status_hireDate, status_isEligibleForRehire, status_statusType, homeAddress_address1, homeAddress_address2, homeAddress_city, homeAddress_country, homeAddress_emailAddress, homeAddress_mobilePhone, homeAddress_state, homeAddress_postalCode, webTime_isTimeLaborEnabled, webTime_badgeNumber, companyName, companyFEIN, isRothCatchupRequiredEmployee, emergencyContacts, federalTax_deductionsAmount, departmentPosition_reviewerCompanyNumber, departmentPosition_reviewerEmployeeId, departmentPosition_supervisorCompanyNumber, departmentPosition_supervisorEmployeeId, status_terminationDate, ethnicity, maritalStatus, departmentPosition_changeReason, middleName, workAddress_location, workAddress_address1, priorLastName, workAddress_city, workAddress_country, workAddress_state, workAddress_postalCode, webTime_chargeRate, workEligibility_isI9Verified, workEligibility_isSsnVerified, preferredName, federalTax_higherRate, homeAddress_phone, workEligibility_foreignPassportNumber, workEligibility_i94AdmissionNumber, workEligibility_workAuthorization, workEligibility_alienOrAdmissionDocumentNumber, status_reHireDate
 
-### `std.paylocity_ev_employees_detail`  (rows: 8,228 | cols: 136)
+### `std.paylocity_ev_employees_detail`  (rows: 8,251 | cols: 136)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -219,7 +219,7 @@ _+ 110 more columns (truncated for brevity):_ departmentPosition_isUnionDuesColl
 | segment_applyToDate | nvarchar(10) | Y |
 | legacyAssignmentId | nvarchar(max) | Y |
 
-### `std.paylocity_ev_shift_unified`  (rows: 341,140 | cols: 25 | PK: shiftId, employeeId)
+### `std.paylocity_ev_shift_unified`  (rows: 341,383 | cols: 25 | PK: shiftId, employeeId)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -279,7 +279,7 @@ _+ 110 more columns (truncated for brevity):_ departmentPosition_isUnionDuesColl
 | assignedTo_companyId | varchar(max) | Y |
 | assignedTo_employeeId | varchar(max) | Y |
 
-### `std.paylocity_ev_punches`  (rows: 1,058,529 | cols: 42)
+### `std.paylocity_ev_punches`  (rows: 1,060,707 | cols: 42)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -393,7 +393,7 @@ _+ 12 more columns (truncated for brevity):_ last_updated_at, relativeOriginalEn
 | status | varchar(20) | Y |
 | statusType | varchar(20) | Y |
 
-### `ref.paylocity_ev_employees_basic`  (rows: 8,223 | cols: 7 | PK: id)
+### `ref.paylocity_ev_employees_basic`  (rows: 8,246 | cols: 7 | PK: id)
 
 | Column | Type | Null? |
 |---|---|---|
