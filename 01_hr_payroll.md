@@ -219,7 +219,7 @@ _+ 110 more columns (truncated for brevity):_ departmentPosition_isUnionDuesColl
 | segment_applyToDate | nvarchar(10) | Y |
 | legacyAssignmentId | nvarchar(max) | Y |
 
-### `std.paylocity_ev_shift_unified`  (rows: 341,383 | cols: 25 | PK: shiftId, employeeId)
+### `std.paylocity_ev_shift_unified`  (rows: 341,570 | cols: 25 | PK: shiftId, employeeId)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -279,7 +279,7 @@ _+ 110 more columns (truncated for brevity):_ departmentPosition_isUnionDuesColl
 | assignedTo_companyId | varchar(max) | Y |
 | assignedTo_employeeId | varchar(max) | Y |
 
-### `std.paylocity_ev_punches`  (rows: 1,060,707 | cols: 42)
+### `std.paylocity_ev_punches`  (rows: 1,064,337 | cols: 42)
 
 | Column | Type | Null? |
 |---|---|---|
