@@ -26,7 +26,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 - **`ref.uber_shift_logs`** (+ `_wav` variant) — a log of shift start/end postings to Uber's API (`shift.start_time_utc`/`shift.end_time_utc`, plus `uber_post_status`/`uber_get_status` HTTP-style status codes) — this looks like an integration/sync audit trail rather than a business fact table; useful for debugging why a shift didn't sync, less useful for driver-activity analysis (use `*_driver_activity` for that).
 
 <!-- AUTO:BEGIN tables (regenerated daily by scripts/regenerate.py — do not hand-edit below this line) -->
-### `std.uber_ev_trip_activity`  (rows: 7,242,539 | cols: 21 | PK: trip_uuid)
+### `std.uber_ev_trip_activity`  (rows: 7,290,985 | cols: 21 | PK: trip_uuid)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -52,7 +52,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | _sync_year | int | Y |
 | is_teen_trip | nvarchar(10) | Y |
 
-### `std.uber_wav_trip_activity`  (rows: 440,928 | cols: 22 | PK: trip_uuid)
+### `std.uber_wav_trip_activity`  (rows: 445,896 | cols: 22 | PK: trip_uuid)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -79,7 +79,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | source_org_id | nvarchar(50) | Y |
 | is_teen_trip | nvarchar(10) | Y |
 
-### `std.uber_ev_driver_activity`  (rows: 514,969 | cols: 8 | PK: DriverUUID, StartTime)
+### `std.uber_ev_driver_activity`  (rows: 519,201 | cols: 8 | PK: DriverUUID, StartTime)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -92,7 +92,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | **StartTime** | datetime2 | N |
 | EndTime | datetime2 | Y |
 
-### `std.uber_wav_driver_activity`  (rows: 43,264 | cols: 9 | PK: DriverUUID, StartTime)
+### `std.uber_wav_driver_activity`  (rows: 44,224 | cols: 9 | PK: DriverUUID, StartTime)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -106,7 +106,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | EndTime | datetime2 | Y |
 | source_org_id | nvarchar(50) | Y |
 
-### `std.uber_ev_driver_quality`  (rows: 523,513 | cols: 13 | PK: driver_uuid, start_time)
+### `std.uber_ev_driver_quality`  (rows: 527,980 | cols: 13 | PK: driver_uuid, start_time)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -124,7 +124,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | drivers_current_acceptance_rate | float | Y |
 | drivers_current_cancellation_rate | float | Y |
 
-### `std.uber_wav_driver_quality`  (rows: 31,829 | cols: 14 | PK: driver_uuid, start_time)
+### `std.uber_wav_driver_quality`  (rows: 32,786 | cols: 14 | PK: driver_uuid, start_time)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -143,7 +143,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | drivers_current_cancellation_rate | float | Y |
 | source_org_id | nvarchar(50) | Y |
 
-### `std.uber_ev_driver_payments`  (rows: 644,392 | cols: 16 | PK: DriverUUID, StartTime)
+### `std.uber_ev_driver_payments`  (rows: 648,791 | cols: 16 | PK: DriverUUID, StartTime)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -186,7 +186,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | ReportId | nvarchar(100) | Y |
 | source_org_id | nvarchar(50) | Y |
 
-### `std.uber_ev_driver_locations`  (rows: 14 | cols: 11 | PK: DriverUuid, LocationEpochMs)
+### `std.uber_ev_driver_locations`  (rows: 124 | cols: 11 | PK: DriverUuid, LocationEpochMs)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -225,7 +225,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | Acceptance_Rate | nvarchar(500) | Y |
 | Cancellation_Rate | nvarchar(500) | Y |
 
-### `std.uber_ev_driver_transactions`  (rows: 1,431,978 | cols: 12)
+### `std.uber_ev_driver_transactions`  (rows: 1,480,628 | cols: 12)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -242,7 +242,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | Organization | nvarchar(50) | Y |
 | TripUuid_Key | nvarchar(36) | Y |
 
-### `std.uber_wav_driver_transactions`  (rows: 107,672 | cols: 12)
+### `std.uber_wav_driver_transactions`  (rows: 113,977 | cols: 12)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -259,7 +259,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | Organization | nvarchar(max) | Y |
 | source_org_id | nvarchar(50) | Y |
 
-### `std.uber_ev_auto_pos`  (rows: 186,217 | cols: 19 | PK: _id)
+### `std.uber_ev_auto_pos`  (rows: 191,560 | cols: 19 | PK: _id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -283,7 +283,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | Next_Dispatch_Accepted_Timestamp | nvarchar(50) | Y |
 | Next_Dispatch_Accepted_Trip_UUID | nvarchar(500) | Y |
 
-### `std.uber_wav_auto_pos`  (rows: 3,470 | cols: 20 | PK: _id)
+### `std.uber_wav_auto_pos`  (rows: 4,290 | cols: 20 | PK: _id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -335,7 +335,7 @@ See [`00_START_HERE.md`](00_START_HERE.md) for join keys and the AV/EV/WAV conve
 | end_shift_fleetio_submitted | datetimeoffset | Y |
 | clock_out | datetime2 | Y |
 
-### `std.uber_ev_timeline`  (rows: 4,151,947 | cols: 10 | PK: DriverUuid, Event, EventEpochMs)
+### `std.uber_ev_timeline`  (rows: 4,418,760 | cols: 10 | PK: DriverUuid, Event, EventEpochMs)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -424,7 +424,7 @@ _+ 38 more columns (truncated for brevity):_ Paid_to_you_Your_earnings_Fare_Addi
 
 _+ 21 more columns (truncated for brevity):_ Total_Earnings_Other_earnings_Non_trip_earnings_misc, Total_Earnings_Other_earnings_Cancellation_Charges, Total_Earnings_Other_earnings_Payment_for_In_progress_eats_order, Total_Earnings_Taxes, Total_Earnings_Other_fees_Pet_Surcharge, Refunds___Expenses_Refunds_Toll, Total_Earnings_Other_earnings_Shared_Rides_Service_Fee_Adjustment, Total_Earnings_Other_earnings_Healthcare_Stipend, payouts_date, DriverUUID, DriverFirstName, DriverLastName, TotalEarnings, NetFare, RefundsAndExpenses, PromotionsAdvantangeMode, BookingFee, Tip, LostItemReturn, PaymentforInprogresseatsorderPromotions, RefundsAirportFee
 
-### `ref.uber_drivers`  (rows: 64,252 | cols: 13)
+### `ref.uber_drivers`  (rows: 64,356 | cols: 13)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -450,7 +450,7 @@ _+ 21 more columns (truncated for brevity):_ Total_Earnings_Other_earnings_Non_t
 | Org ID | nvarchar(50) | Y |
 | Org Branch | nvarchar(50) | Y |
 
-### `ref.uber_vehicles`  (rows: 687 | cols: 15 | PK: _id)
+### `ref.uber_vehicles`  (rows: 695 | cols: 15 | PK: _id)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -470,7 +470,7 @@ _+ 21 more columns (truncated for brevity):_ Total_Earnings_Other_earnings_Non_t
 | inserted_at | datetime2 | Y |
 | source_org_id | nvarchar(max) | Y |
 
-### `ref.uber_shift_logs`  (rows: 1,476,938 | cols: 16)
+### `ref.uber_shift_logs`  (rows: 1,530,999 | cols: 16)
 
 | Column | Type | Null? |
 |---|---|---|
@@ -491,7 +491,7 @@ _+ 21 more columns (truncated for brevity):_ Total_Earnings_Other_earnings_Non_t
 | uber_get_response | nvarchar(max) | Y |
 | logged_at | datetime | Y |
 
-### `ref.uber_shift_logs_wav`  (rows: 21,965 | cols: 16)
+### `ref.uber_shift_logs_wav`  (rows: 28,373 | cols: 16)
 
 | Column | Type | Null? |
 |---|---|---|
